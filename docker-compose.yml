@@ -1,0 +1,29 @@
+version: "3.4"
+
+x-logging:
+  &default-logging
+  driver: "json-file"
+  options:
+    max-size: "50M"
+    max-file: "5"
+
+services:
+  api:
+    container_name: editor-history-maker
+    image: node:alpine3.12
+    command: >
+      sh -c "yarn serve"
+    working_dir: /app/editor
+    volumes:
+      - ./:/app/
+    environment:
+      NODE_ENV: development.local
+    logging: *default-logging
+    ports:
+      - 8080:8080
+    networks:
+      - history-maker-net
+
+networks:
+  history-maker-net:
+    external: true 
