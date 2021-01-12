@@ -102,11 +102,22 @@
       cover: ''
     }),
     created() {
+      console.log('created')
+      this.$store.commit('emptyCurrentBookPages');
       const bookId = this.$route.params.id;
-      if (bookId === 'new')
-        return;
+      const vm = this;
+      if (bookId === 'new') {
 
-      this.$store.dispatch('loadBook', bookId);
+        return;
+      }
+
+      this.$store.dispatch('loadBook', bookId).then(function(loadedBook) {
+        vm.title = loadedBook.title;
+        vm.description = loadedBook.description;
+        vm.cover = loadedBook.cover;
+      });
+
+      console.log('limpiando los anteriores');
       this.$store.dispatch('loadBookPages', bookId);
     },
     methods: {
@@ -117,10 +128,16 @@
         const data = {
           title: this.title,
           cover: this.cover,
-          description: this.description
+          description: this.description,
+          id: this.book.id
         };
 
-        this.$store.dispatch('addBook', data);
+        if (this.book.id === undefined) {
+          this.$store.dispatch('addBook', data);
+        }
+        else {
+          this.$store.dispatch('updateBook', data);
+        }
       },
       addPage() {
         const vm = this;

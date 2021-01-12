@@ -1,19 +1,25 @@
 <template>
   <v-container>
-    <v-container>
-      <v-row v-for="book in books" :key="book.id">
+
+    <v-text-field label="Buscar"></v-text-field>
+
+    <v-row v-for="book in library" :key="book.id">
+      <v-col>
         <v-card>
           <v-card-text>
             {{book.title}}
           </v-card-text>
           <v-card-actions>
-            <v-btn>
+            <v-btn :to="editLink(book)">
               Editar
+            </v-btn>
+            <v-btn @click="deleteBook(book)" color="red">
+              Delete
             </v-btn>
           </v-card-actions>
         </v-card>
-      </v-row>
-    </v-container>
+      </v-col>
+    </v-row>
 
   </v-container>
 </template>
@@ -23,12 +29,6 @@
     name: 'NewBook',
 
     data: () => ({
-      books: [
-        {
-          id: 1,
-          title: 'la atalntida'
-        }
-      ],
       notifications: [
         {
           id: 1,
@@ -45,5 +45,21 @@
         }
       ]
     }),
+    created() {
+      this.$store.dispatch('loadUserBooks');
+    },
+    methods: {
+      editLink(book) {
+        return `/book/${book.id}`;
+      },
+      deleteBook(book) {
+        this.$store.dispatch('deleteBook', book);
+      }
+    },
+    computed: {
+      library() {
+        return this.$store.state.userLibrary;
+      }
+    }
   }
 </script>

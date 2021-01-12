@@ -3,13 +3,13 @@
 
     <v-text-field label="Buscar"></v-text-field>
 
-    <v-row v-for="book in books" :key="book.id">
+    <v-row v-for="book in library" :key="book.id">
       <v-card>
         <v-card-text>
           {{book.title}}
         </v-card-text>
         <v-card-actions>
-          <v-btn>
+          <v-btn :to="editLink(book)">
             Editar
           </v-btn>
         </v-card-actions>
@@ -24,12 +24,6 @@
     name: 'NewBook',
 
     data: () => ({
-      books: [
-        {
-          id: 1,
-          title: 'la atalntida'
-        }
-      ],
       notifications: [
         {
           id: 1,
@@ -46,5 +40,18 @@
         }
       ]
     }),
+    created() {
+      this.$store.dispatch('loadUserBooks');
+    },
+    methods: {
+      editLink(book) {
+        return `/book/${book.id}`;
+      }
+    },
+    computed: {
+      library() {
+        return this.$store.state.userLibrary;
+      }
+    }
   }
 </script>

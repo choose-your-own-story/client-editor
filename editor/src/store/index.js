@@ -31,10 +31,16 @@ export default new Vuex.Store({
     addPageToCurrentBook(state, newData) {
       state.currentBookPages.push(newData);
     },
+    emptyCurrentBookPages(state) {
+      state.currentBookPages = [];
+    },
     removePageFromCurrentBook(state, pageId) {
       state.currentBookPages = state.currentBookPages.filter(function(item) {
         return item.id !== pageId;
       });
+    },
+    removeBookFromCurrentLibrary(state, bookId) {
+      state.userLibrary = state.userLibrary.filter(book => parseInt(book.id) !== parseInt(bookId));
     }
   },
   actions: {
@@ -85,8 +91,24 @@ export default new Vuex.Store({
         headers: headers,
         data: bookData
       }).then(function(response) {
-        console.log('nuevo libro');
-        console.log(response.data);
+        state.commit('updateCurrentBook', response.data)
+      }).catch(function(err) {
+        console.log(err);
+      });
+    },
+    updateBook(state, bookData) {
+      // Send a POST request
+      const headers = {
+        'Authorization': 'jota', // rootState.users.token
+        'Access-Control-Allow-Origin': '*'
+      };
+
+      axios({
+        method: 'put',
+        url: `http://localhost:3000/api/book/${bookData.id}`,
+        headers: headers,
+        data: bookData
+      }).then(function(response) {
         state.commit('updateCurrentBook', response.data)
       }).catch(function(err) {
         console.log(err);
@@ -144,8 +166,40 @@ export default new Vuex.Store({
         console.log(err);
       });
     },
-    loadBook(state, bookId) {
-    }
+    async loadBook(state, bookId) {
+      // Send a POST request
+      const headers = {
+        'Authorization': 'jota', // rootState.users.token
+        'Access-Control-Allow-Origin': '*'
+      };
+
+      const response = await axios({
+        method: 'get',
+        url: `http://localhost:3000/api/book/${bookId}`,
+        headers: headers
+      });
+
+      state.commit('updateCurrentBook', response.data);
+
+      return response.data;
+    },
+    deleteBook(state, data) {
+      // Send a POST request
+      const headers = {
+        'Authorization': 'jota', // rootState.users.token
+        'Access-Control-Allow-Origin': '*'
+      };
+
+      axios({
+        method: 'delete',
+        url: `http://localhost:3000/api/book/${data.id}`,
+        headers: headers
+      }).then(function(response) {
+        state.commit('removeBookFromCurrentLibrary', data.id);
+      }).catch(function(err) {
+        console.log(err);
+      });
+    },
   },
   modules: {
   }
