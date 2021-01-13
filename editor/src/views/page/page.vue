@@ -5,12 +5,12 @@
       <v-container v-if="addingParagraph">
         <v-row>
           <v-col>
-            <v-textarea label="New Paragraph"></v-textarea>
+            <v-textarea label="New Paragraph" v-model="paragraph"></v-textarea>
           </v-col>
         </v-row>
         <v-row>
           <v-col>
-            <v-btn>
+            <v-btn @click="addParagraph()">
               Add
             </v-btn>
           </v-col>
@@ -20,12 +20,12 @@
       <v-container v-if="addingImage">
         <v-row>
           <v-col>
-            <v-text-field label="New image"></v-text-field>
+            <v-text-field label="New image" v-model="image"></v-text-field>
           </v-col>
         </v-row>
         <v-row>
           <v-col>
-            <v-btn>
+            <v-btn @click="addImage()">
               Add
             </v-btn>
           </v-col>
@@ -35,25 +35,26 @@
       <v-container v-if="addingChoice">
         <v-row>
           <v-col>
-            <v-text-field label="Choice description"></v-text-field>
+            <v-text-field label="Choice description" v-model="choiceText"></v-text-field>
           </v-col>
         </v-row>
         <v-row>
           <v-col>
-            <v-radio-group>
+            <v-radio-group v-model="targetPageGroup">
               <v-radio label="Existing page">
               </v-radio>
-              <v-combobox>
+              <v-combobox label="Pages" v-model="selectedTargetPage" :items="bookPages">
               </v-combobox>
 
               <v-radio label="New Page">
               </v-radio>
+              <v-text-field v-model="newPageTitle" label="Title"></v-text-field>
             </v-radio-group>
           </v-col>
         </v-row>
         <v-row>
           <v-col>
-            <v-btn>
+            <v-btn @click="addChoice()">
               Add
             </v-btn>
           </v-col>
@@ -62,7 +63,12 @@
 
       <v-row>
         <v-col>
-          <v-text-field label="Title"></v-text-field>
+          <v-text-field label="Title" v-model="title"></v-text-field>
+        </v-col>
+        <v-col>
+          <v-btn @click="updatePageTitle()">
+            Guardar Titulo
+          </v-btn>
         </v-col>
       </v-row>
 
@@ -103,7 +109,13 @@
             {{choice.value}}
           </v-col>
           <v-col>
-            <v-btn color="red" outlined>
+            {{choice.targetPage}}
+          </v-col>
+          <v-col>
+            {{choice.targetPageTitle}}
+          </v-col>
+          <v-col>
+            <v-btn color="red" outlined @click="deletePageChoice(choice)">
               Eliminar
             </v-btn>
           </v-col>
@@ -176,14 +188,25 @@
       addingParagraph: false,
       addingImage: false,
       addingChoice: false,
+      paragraph: '',
+      image: '',
+      choiceText: '',
       fab: false,
+      targetPageGroup: 0,
+      selectedTargetPage: 0,
+      newPageTitle: '',
+      title: ''
     }),
     created() {
+      const vm = this;
       const data = {
         bookId: this.$route.params.bookId,
         pageId: this.$route.params.pageId
       };
-      this.$store.dispatch('loadPage', data);
+      this.$store.dispatch('loadPage', data).then(function(data) {
+        vm.title = data.title;
+      });
+      this.$store.dispatch('loadBookPages', this.$route.params.bookId)
     },
     methods: {
       showAddParagraph() {
@@ -200,18 +223,92 @@
         this.addingChoice = true;
         this.addingImage = false;
         this.addingParagraph = false;
+      },
+      addParagraph() {
+        const data = {
+          bookId: this.$route.params.bookId,
+          pageId: this.$route.params.pageId,
+          page_id: this.$route.params.pageId,
+          item_type: 1,
+          value: this.paragraph
+        };
+        this.$store.dispatch('addPageItem', data);
+      },
+      updatePageTitle() {
+        const data = {
+          bookId: this.$route.params.bookId,
+          pageId: this.$route.params.pageId,
+          page_id: this.$route.params.pageId,
+          title: this.title
+        };
+        this.$store.dispatch('updatePageTitle', data);
+      },
+      deletePageChoice(choice) {
+        const data = {
+          bookId: this.$route.params.bookId,
+          pageId: this.$route.params.pageId,
+          page_id: this.$route.params.pageId,
+          choiceId: choice.id
+        };
+        this.$store.dispatch('deleteChoice', data);
+      },
+      addImage() {
+        const data = {
+          bookId: this.$route.params.bookId,
+          pageId: this.$route.params.pageId,
+          page_id: this.$route.params.pageId,
+          item_type: 2,
+          value: this.image
+        };
+        this.$store.dispatch('addPageItem', data);
+      },
+      addChoice() {
+        let targetPage = 0;
+        // existing page
+        if (this.targetPageGroup === 0) {
+          targetPage = this.selectedTargetPage.value;
+        }
+
+        // new page
+        if (this.targetPageGroup === 1) {
+          targetPage = 0;
+        }
+
+        const data = {
+          bookId: this.$route.params.bookId,
+          pageId: this.$route.params.pageId,
+          page_id: this.$route.params.pageId,
+          sort_index: 1,
+          value: this.choiceText,
+          target_page: targetPage,
+          target_page_title: this.newPageTitle,
+          targetPageTitle: this.newPageTitle
+        };
+        this.$store.dispatch('addPageChoice', data);
       }
     },
     computed: {
       items() {
-        if (this.$store.state.currentPage === undefined)
+        if (this.$store.state.currentPage === undefined) {
           return [];
+        }
         return this.$store.state.currentPage.items;
       },
       choices() {
         if (this.$store.state.currentPage === undefined)
           return [];
         return this.$store.state.currentPage.choices;
+      },
+      book() {
+        return this.$store.state.currentBook();
+      },
+      bookPages() {
+        return this.$store.state.currentBookPages.map(item => {
+          return {
+            value: item.id,
+            text: item.title
+          }
+        });
       }
     }
   }

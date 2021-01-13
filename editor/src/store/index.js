@@ -6,7 +6,11 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
-    currentPage: {},
+    currentPage: {
+      items: [],
+      choices: [],
+      title: ''
+    },
     currentBook: {},
     userLibrary: [],
     currentBookPages: []
@@ -15,6 +19,9 @@ export default new Vuex.Store({
     updateCurrentPage(state, newData) {
       state.currentPage.items = newData.items;
       state.currentPage.choices = newData.choices;
+    },
+    updateCurrentPageTitle(state, newData) {
+      state.currentPage.title = newData.title;
     },
     updateCurrentBook(state, newData) {
       state.currentBook.id = newData.id;
@@ -31,6 +38,12 @@ export default new Vuex.Store({
     addPageToCurrentBook(state, newData) {
       state.currentBookPages.push(newData);
     },
+    addItemToCurrentPage(state, newItem) {
+      state.currentPage.items.push(newItem);
+    },
+    addChoiceToCurrentPage(state, newItem) {
+      state.currentPage.choices.push(newItem);
+    },
     emptyCurrentBookPages(state) {
       state.currentBookPages = [];
     },
@@ -41,6 +54,9 @@ export default new Vuex.Store({
     },
     removeBookFromCurrentLibrary(state, bookId) {
       state.userLibrary = state.userLibrary.filter(book => parseInt(book.id) !== parseInt(bookId));
+    },
+    removeChoiceFromCurrentPage(state, choiceId) {
+      state.currentPage.choices = state.currentPage.choices.filter(choice => parseInt(choice.id) !== parseInt(choiceId));
     }
   },
   actions: {
@@ -132,6 +148,42 @@ export default new Vuex.Store({
         console.log(err);
       });
     },
+    addPageItem(state, data) {
+      // Send a POST request
+      const headers = {
+        'Authorization': 'jota', // rootState.users.token
+        'Access-Control-Allow-Origin': '*'
+      };
+
+      axios({
+        method: 'post',
+        url: `http://localhost:3000/api/book/${data.bookId}/page/${data.pageId}/item`,
+        headers: headers,
+        data: data
+      }).then(function(response) {
+        state.commit('addItemToCurrentPage', response.data)
+      }).catch(function(err) {
+        console.log(err);
+      });
+    },
+    addPageChoice(state, data) {
+      // Send a POST request
+      const headers = {
+        'Authorization': 'jota', // rootState.users.token
+        'Access-Control-Allow-Origin': '*'
+      };
+
+      axios({
+        method: 'post',
+        url: `http://localhost:3000/api/book/${data.bookId}/page/${data.pageId}/choice`,
+        headers: headers,
+        data: data
+      }).then(function(response) {
+        state.commit('addChoiceToCurrentPage', response.data)
+      }).catch(function(err) {
+        console.log(err);
+      });
+    },
     deletePage(state, data) {
       // Send a POST request
       const headers = {
@@ -149,7 +201,7 @@ export default new Vuex.Store({
         console.log(err);
       });
     },
-    loadPage(state, data) {
+    deleteChoice(state, data) {
       // Send a POST request
       const headers = {
         'Authorization': 'jota', // rootState.users.token
@@ -157,11 +209,44 @@ export default new Vuex.Store({
       };
 
       axios({
+        method: 'delete',
+        url: `http://localhost:3000/api/book/${data.bookId}/page/${data.pageId}/choice/${data.choiceId}`,
+        headers: headers
+      }).then(function() {
+        state.commit('removeChoiceFromCurrentPage', data.choiceId)
+      }).catch(function(err) {
+        console.log(err);
+      });
+    },
+    async loadPage(state, data) {
+      // Send a POST request
+      const headers = {
+        'Authorization': 'jota', // rootState.users.token
+        'Access-Control-Allow-Origin': '*'
+      };
+
+      const response = await axios({
         method: 'get',
         url: `http://localhost:3000/api/book/${data.bookId}/page/${data.pageId}`,
         headers: headers
+      });
+      state.commit('updateCurrentPage', response.data);
+      return response.data;
+    },
+    updatePageTitle(state, data) {
+      // Send a POST request
+      const headers = {
+        'Authorization': 'jota', // rootState.users.token
+        'Access-Control-Allow-Origin': '*'
+      };
+
+      axios({
+        method: 'put',
+        url: `http://localhost:3000/api/book/${data.bookId}/page/${data.pageId}`,
+        headers: headers,
+        data: data
       }).then(function(response) {
-        state.commit('updateCurrentPage', response.data)
+        state.commit('updateCurrentPageTitle', response.data)
       }).catch(function(err) {
         console.log(err);
       });
