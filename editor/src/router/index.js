@@ -6,6 +6,7 @@ import Page from '../views/page/page.vue'
 import UserLibrary from '../views/user/library.vue'
 import UserNotifications from '../views/user/notifications.vue'
 import Library from '../views/library/library.vue'
+import { authGuard } from "../auth/authGuard";
 
 Vue.use(VueRouter);
 
@@ -28,7 +29,8 @@ const routes = [
   {
     path: '/user/library',
     name: 'UserLibrary',
-    component: UserLibrary
+    component: UserLibrary,
+    beforeEnter: authGuard
   },
   {
     path: '/user/notifications',
