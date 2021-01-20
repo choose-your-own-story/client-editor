@@ -13,9 +13,17 @@ export default new Vuex.Store({
     },
     currentBook: {},
     userLibrary: [],
-    currentBookPages: []
+    currentBookPages: [],
+
+    token: localStorage.getItem('token') || '',
+    userName: localStorage.getItem('user_name') || '',
+    userThumb: localStorage.getItem('user_thumb') || '',
+    uploadedData: ''
   },
   mutations: {
+    fileUploaded(state, data) {
+      state.uploadedData = data;
+    },
     updateCurrentPage(state, newData) {
       state.currentPage.items = newData.items;
       state.currentPage.choices = newData.choices;
@@ -57,13 +65,53 @@ export default new Vuex.Store({
     },
     removeChoiceFromCurrentPage(state, choiceId) {
       state.currentPage.choices = state.currentPage.choices.filter(choice => parseInt(choice.id) !== parseInt(choiceId));
+    },
+    postAuthentication(state, userData) {
+      console.log('post')
+      console.log(userData);
+      if (userData === undefined) {
+        state.userName = undefined;
+        state.userThumb = undefined;
+        state.token = undefined;
+        return;
+      }
+
+      const user = userData.user;
+
+      if ((user === undefined) || (userData.token === undefined)){
+        state.userName = undefined;
+        state.userThumb = undefined;
+        state.token = undefined;
+        return;
+      }
+
+      console.log('aaaa');
+
+      state.userName = user.name;
+      state.userThumb = user.thumb;
+      state.token = userData.token;
+
+      // galletita
+      localStorage.setItem('token', userData.token);
+      localStorage.setItem('user_name', userData.name);
+      localStorage.setItem('user_thumb', userData.thumb);
+    },
+    logout(state) {
+      state.userName = undefined;
+      state.userThumb = undefined;
+      state.token = undefined;
+
+      // galletita
+      localStorage.removeItem('token');
+      localStorage.removeItem('user_name');
+      localStorage.removeItem('user_thumb');
     }
   },
   actions: {
     loadBookPages(state, bookId) {
       // Send a POST request
       const headers = {
-        'Authorization': 'jota', // rootState.users.token
+        'Authorization': `Bearer ${state.state.token}`,
         'Access-Control-Allow-Origin': '*'
       };
 
@@ -78,9 +126,10 @@ export default new Vuex.Store({
       });
     },
     loadUserBooks(state) {
+      console.log('state token');
       // Send a POST request
       const headers = {
-        'Authorization': 'jota', // rootState.users.token
+        'Authorization': `Bearer ${state.state.token}`,
         'Access-Control-Allow-Origin': '*'
       };
 
@@ -97,7 +146,7 @@ export default new Vuex.Store({
     addBook(state, bookData) {
       // Send a POST request
       const headers = {
-        'Authorization': 'jota', // rootState.users.token
+        'Authorization': `Bearer ${state.state.token}`,
         'Access-Control-Allow-Origin': '*'
       };
 
@@ -115,7 +164,7 @@ export default new Vuex.Store({
     updateBook(state, bookData) {
       // Send a POST request
       const headers = {
-        'Authorization': 'jota', // rootState.users.token
+        'Authorization': `Bearer ${state.state.token}`,
         'Access-Control-Allow-Origin': '*'
       };
 
@@ -133,7 +182,7 @@ export default new Vuex.Store({
     addPage(state, bookId) {
       // Send a POST request
       const headers = {
-        'Authorization': 'jota', // rootState.users.token
+        'Authorization': `Bearer ${state.state.token}`,
         'Access-Control-Allow-Origin': '*'
       };
 
@@ -151,7 +200,7 @@ export default new Vuex.Store({
     addPageItem(state, data) {
       // Send a POST request
       const headers = {
-        'Authorization': 'jota', // rootState.users.token
+        'Authorization': `Bearer ${state.state.token}`,
         'Access-Control-Allow-Origin': '*'
       };
 
@@ -169,7 +218,7 @@ export default new Vuex.Store({
     addPageChoice(state, data) {
       // Send a POST request
       const headers = {
-        'Authorization': 'jota', // rootState.users.token
+        'Authorization': `Bearer ${state.state.token}`,
         'Access-Control-Allow-Origin': '*'
       };
 
@@ -187,7 +236,7 @@ export default new Vuex.Store({
     deletePage(state, data) {
       // Send a POST request
       const headers = {
-        'Authorization': 'jota', // rootState.users.token
+        'Authorization': `Bearer ${state.state.token}`,
         'Access-Control-Allow-Origin': '*'
       };
 
@@ -204,7 +253,7 @@ export default new Vuex.Store({
     deleteChoice(state, data) {
       // Send a POST request
       const headers = {
-        'Authorization': 'jota', // rootState.users.token
+        'Authorization': `Bearer ${state.state.token}`,
         'Access-Control-Allow-Origin': '*'
       };
 
@@ -221,7 +270,7 @@ export default new Vuex.Store({
     async loadPage(state, data) {
       // Send a POST request
       const headers = {
-        'Authorization': 'jota', // rootState.users.token
+        'Authorization': `Bearer ${state.state.token}`,
         'Access-Control-Allow-Origin': '*'
       };
 
@@ -236,7 +285,7 @@ export default new Vuex.Store({
     updatePageTitle(state, data) {
       // Send a POST request
       const headers = {
-        'Authorization': 'jota', // rootState.users.token
+        'Authorization': `Bearer ${state.state.token}`,
         'Access-Control-Allow-Origin': '*'
       };
 
@@ -254,7 +303,7 @@ export default new Vuex.Store({
     async loadBook(state, bookId) {
       // Send a POST request
       const headers = {
-        'Authorization': 'jota', // rootState.users.token
+        'Authorization': `Bearer ${state.state.token}`,
         'Access-Control-Allow-Origin': '*'
       };
 
@@ -271,7 +320,7 @@ export default new Vuex.Store({
     deleteBook(state, data) {
       // Send a POST request
       const headers = {
-        'Authorization': 'jota', // rootState.users.token
+        'Authorization': `Bearer ${state.state.token}`,
         'Access-Control-Allow-Origin': '*'
       };
 
@@ -284,6 +333,76 @@ export default new Vuex.Store({
       }).catch(function(err) {
         console.log(err);
       });
+    },
+    login(state, data) {
+      // Send a POST request
+      const headers = {
+        'Access-Control-Allow-Origin': '*'
+      };
+
+      return new Promise(function(resolve, reject) {
+        axios({
+          method: 'post',
+          url: `http://localhost:3000/api/user/login`,
+          headers: headers,
+          data: data
+        }).then(function(response) {
+          state.commit('postAuthentication', response.data)
+          resolve(response.data);
+        }).catch(function(err) {
+          console.log(err);
+          state.commit('postAuthentication', undefined)
+          reject(err)
+        });
+      })
+
+    },
+    register(state, data) {
+      // Send a POST request
+      const headers = {
+        'Access-Control-Allow-Origin': '*'
+      };
+
+      return new Promise(function(resolve, reject) {
+        axios({
+          method: 'post',
+          url: `http://localhost:3000/api/user/register`,
+          headers: headers,
+          data: data
+        }).then(function(response) {
+          state.commit('postAuthentication', response.data);
+          resolve(response.data);
+        }).catch(function(err) {
+          console.log(err);
+          state.commit('postAuthentication', undefined);
+          reject(err);
+        });
+      })
+    },
+    logout(state) {
+      state.commit('logout');
+    },
+    uploadImageBusiness({commit, rootState, state}, image) {
+      return new Promise((resolve, reject) => {
+        let reqHeaders = {
+          'Authorization': 'Bearer ' + state.token,
+          'Access-Control-Allow-Origin': '*',
+          'Content-Type': 'multipart/form-data'
+        };
+
+        let formData = new FormData();
+        formData.append('file', image);
+
+        axios({ url: 'http://localhost:3000/api/upload/image?type=image', data: formData, headers: reqHeaders, method: 'POST' })
+          .then(resp => {
+            commit('fileUploaded', resp.data);
+            resolve(resp.data)
+          })
+          .catch(err => {
+            console.error(err);
+            reject(err)
+          });
+      })
     },
   },
   modules: {

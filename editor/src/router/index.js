@@ -29,8 +29,7 @@ const routes = [
   {
     path: '/user/library',
     name: 'UserLibrary',
-    component: UserLibrary,
-    beforeEnter: authGuard
+    component: UserLibrary
   },
   {
     path: '/user/notifications',

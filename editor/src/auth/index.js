@@ -16,7 +16,8 @@ export const useAuth0 = ({
                            redirectUri = window.location.origin,
                            ...options
                          }) => {
-  if (instance) return instance;
+  if (instance)
+    return instance;
 
   // The 'instance' is simply a Vue object
   instance = new Vue({

@@ -20,7 +20,16 @@
       <v-container v-if="addingImage">
         <v-row>
           <v-col>
-            <v-text-field label="New image" v-model="image"></v-text-field>
+            <v-file-input
+                    v-model="fileModel"
+                    :rules="rules"
+                    accept="image/png, image/jpeg, image/bmp"
+                    prepend-icon="mdi-camera"
+                    label="Imagen"
+                    outlined
+                    @change="handleFileUpload()"
+            />
+            <v-label>{{added_url}}</v-label>
           </v-col>
         </v-row>
         <v-row>
@@ -83,9 +92,16 @@
       <v-container>
         <v-row v-for="item in items" :key="item.id">
           <v-col>
-            <p>
-              {{item.value}}
-            </p>
+              <div v-if="item.type===2">
+                <v-img :src="item.value" max-width="200" max-height="300">
+
+                </v-img>
+              </div>
+              <div v-if="item.type===1">
+                <p>
+                  {{item.value}}
+                </p>
+              </div>
           </v-col>
           <v-col>
             <v-btn color="red" outlined>
@@ -195,7 +211,12 @@
       targetPageGroup: 0,
       selectedTargetPage: 0,
       newPageTitle: '',
-      title: ''
+      title: '',
+      fileModel: [],
+      rules: [
+        value => !value || value.size < 2000000 || 'Avatar size should be less than 2 MB!',
+      ],
+      added_url: ''
     }),
     created() {
       const vm = this;
@@ -209,6 +230,15 @@
       this.$store.dispatch('loadBookPages', this.$route.params.bookId)
     },
     methods: {
+      handleFileUpload: function() {
+        let vm = this;
+        if ((this.fileModel !== undefined) && (this.fileModel.name.length > 0)) {
+          this.$store.dispatch('uploadImageBusiness', this.fileModel).then(function (newUrl) {
+            console.log('exitos!');
+            vm.added_url = newUrl
+          });
+        }
+      },
       showAddParagraph() {
         this.addingChoice = false;
         this.addingImage = false;
@@ -253,14 +283,22 @@
         this.$store.dispatch('deleteChoice', data);
       },
       addImage() {
-        const data = {
+        const vm = this;
+
+        let data = {
           bookId: this.$route.params.bookId,
           pageId: this.$route.params.pageId,
           page_id: this.$route.params.pageId,
           item_type: 2,
-          value: this.image
+          value: this.added_url
         };
-        this.$store.dispatch('addPageItem', data);
+        this.$store.dispatch('addPageItem', data).then(function(imageData) {
+          data.value = imageData.url;
+          vm.$store.dispatch('addPageItem', data);
+        }).catch(function(err) {
+          console.log(err);
+          console.log('unable to upload image');
+        });
       },
       addChoice() {
         let targetPage = 0;
