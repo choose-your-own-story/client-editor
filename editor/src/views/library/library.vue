@@ -8,6 +8,10 @@
         <v-card-text>
           {{book.title}}
         </v-card-text>
+        <v-card-text>
+          {{book.cover}}
+        </v-card-text>
+        <v-img :src="book.cover" max-width="200" max-height="300"></v-img>
         <v-card-actions>
           <v-btn :to="editLink(book)">
             Editar

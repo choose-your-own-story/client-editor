@@ -87,14 +87,16 @@ export default new Vuex.Store({
 
       console.log('aaaa');
 
+      console.log(userData);
+
       state.userName = user.name;
       state.userThumb = user.thumb;
       state.token = userData.token;
 
       // galletita
       localStorage.setItem('token', userData.token);
-      localStorage.setItem('user_name', userData.name);
-      localStorage.setItem('user_thumb', userData.thumb);
+      localStorage.setItem('user_name', user.name);
+      localStorage.setItem('user_thumb', user.thumb);
     },
     logout(state) {
       state.userName = undefined;

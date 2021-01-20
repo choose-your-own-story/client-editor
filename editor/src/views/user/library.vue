@@ -6,15 +6,17 @@
     <v-row v-for="book in library" :key="book.id">
       <v-col>
         <v-card>
-          <v-card-text>
+          <v-card-text class="title">
             {{book.title}}
           </v-card-text>
+          <v-row>
+            <v-col align="center">
+              <v-img :src="book.cover" max-width="200" max-height="300"></v-img>
+            </v-col>
+          </v-row>
           <v-card-actions>
             <v-btn :to="editLink(book)">
               Editar
-            </v-btn>
-            <v-btn @click="deleteBook(book)" color="red">
-              Delete
             </v-btn>
           </v-card-actions>
         </v-card>

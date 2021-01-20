@@ -5,27 +5,31 @@
       color="primary"
       dark
     >
-      <div class="d-flex align-center">
-        <v-img
-          alt="History Maker"
-          class="shrink mr-2"
-          contain
-          src="logo.png"
-          transition="scale-transition"
-          width="40"
-        />
-      </div>
+        <div class="d-flex align-center">
+            <v-btn to="/" icon>
+                <v-avatar>
+                    <v-img
+                      alt="History Maker"
+                      class="shrink mr-2"
+                      contain
+                      src="logo.png"
+                      transition="scale-transition"
+                      width="40"
+                    />
+                </v-avatar>
+            </v-btn>
+        </div>
         <span class="text-h4">
             History Maker
         </span>
 
-      <v-spacer></v-spacer>
+        <v-spacer></v-spacer>
 
-        <v-btn v-if="!isAuthenticated" @click="showLogin()" text>
-            <v-icon>mdi-login</v-icon>
+        <v-btn v-if="!isAuthenticated" @click="showLogin()" icon>
+            <v-icon>mdi-account-key</v-icon>
         </v-btn>
 
-        <v-btn v-if="!isAuthenticated" @click="showRegister()" text>
+        <v-btn v-if="!isAuthenticated" @click="showRegister()" icon>
             <v-icon>mdi-account-plus</v-icon>
         </v-btn>
 
@@ -34,14 +38,17 @@
                 @click="logout()"
                 text
         >
-            <v-icon>mdi-login</v-icon>
+            <v-icon>mdi-exit-run</v-icon>
         </v-btn>
+
+        <v-avatar>
+            <v-img :src="userThumb"></v-img>
+        </v-avatar>
     </v-app-bar>
 
     <v-main>
         <v-dialog
                 v-model="registerDialog"
-                persistent
                 max-width="600px"
         >
             <v-card>
@@ -53,8 +60,17 @@
                         <v-row>
                             <v-col>
                                 <v-text-field label="User Name" v-model="userName"></v-text-field>
-                                <v-text-field label="User Password" v-model="userPassword"></v-text-field>
-                                <v-text-field label="User Confirm Password" v-model="userPasswordConfirmation"></v-text-field>
+                                <v-text-field label="User Password" v-model="userPassword" type="password"></v-text-field>
+                                <v-text-field label="User Confirm Password" v-model="userPasswordConfirmation" type="password"></v-text-field>
+                                <v-file-input
+                                        v-model="fileModel"
+                                        :rules="rules"
+                                        accept="image/png, image/jpeg, image/bmp"
+                                        prepend-icon="mdi-camera"
+                                        label="Imagen"
+                                        @change="handleFileUpload()"
+                                />
+                                <v-label>{{added_url}}</v-label>
                             </v-col>
                         </v-row>
                     </v-container>
@@ -73,7 +89,7 @@
                             text
                             @click="registerUser()"
                     >
-                        Save
+                        Register
                     </v-btn>
                 </v-card-actions>
             </v-card>
@@ -81,7 +97,6 @@
 
         <v-dialog
                 v-model="loginDialog"
-                persistent
                 max-width="600px"
         >
             <v-card>
@@ -93,7 +108,7 @@
                         <v-row>
                             <v-col>
                                 <v-text-field label="User Name" v-model="userName"></v-text-field>
-                                <v-text-field label="User Password" v-model="userPassword"></v-text-field>
+                                <v-text-field label="User Password" v-model="userPassword" type="password"></v-text-field>
                             </v-col>
                         </v-row>
                     </v-container>
@@ -112,13 +127,14 @@
                             text
                             @click="loginUser()"
                     >
-                        Save
+                        Login
                     </v-btn>
                 </v-card-actions>
             </v-card>
         </v-dialog>
 
         <router-view/>
+
         <v-snackbar
                 v-model="snackbar"
         >
@@ -150,12 +166,24 @@ export default {
     userName: '',
     userPassword: '',
     userPasswordConfirmation: '',
-    userThumb: '',
     snackbar: false,
-    snackbarText: ''
-
+    snackbarText: '',
+    fileModel: [],
+    added_url: '',
+    rules: [
+      value => !value || value.size < 2000000 || 'Avatar size should be less than 2 MB!',
+    ],
   }),
     methods: {
+      handleFileUpload: function() {
+        let vm = this;
+        if ((this.fileModel !== undefined) && (this.fileModel.name.length > 0)) {
+          this.$store.dispatch('uploadImageBusiness', this.fileModel).then(function (newUrl) {
+            console.log('exitos!');
+            vm.added_url = newUrl
+          });
+        }
+      },
       loginUser() {
         const vm = this;
 
@@ -173,6 +201,9 @@ export default {
         }).catch(function(err) {
           vm.snackbarText = err.toString();
           vm.snackbar = true;
+        }).finally(function() {
+          vm.userName = '';
+          vm.userPassword = '';
         })
       },
       registerUser() {
@@ -198,7 +229,7 @@ export default {
         const data = {
           name: this.userName,
           password: this.userPassword,
-          thumb: this.userThumb
+          thumb: this.added_url
         };
         this.$store.dispatch('register', data).then(function(registerData) {
           if (!vm.isAuthenticated) {
@@ -209,6 +240,11 @@ export default {
         }).catch(function(err) {
           vm.snackbarText = err.toString();
           vm.snackbar = true;
+        }).finally(function() {
+          vm.userName = '';
+          vm.userPassword = '';
+          vm.fileModel = [];
+          vm.added_url = '';
         })
       },
       showRegister() {
@@ -219,7 +255,8 @@ export default {
       },
       // Log the user out
       logout() {
-        this.$store.dispatch('logout')
+        this.$store.dispatch('logout');
+        this.$router.push('/');
       }
 
     },
@@ -230,6 +267,10 @@ export default {
     isAuthenticated() {
       console.log(this.$store.state.token);
       return this.$store.state.token !== undefined && this.$store.state.token !== '';
+    },
+    userThumb() {
+      console.log(this.$store.state.userThumb);
+      return this.$store.state.userThumb;
     }
   }
 };

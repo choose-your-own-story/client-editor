@@ -14,7 +14,15 @@
 
     <v-row>
       <v-col>
-        <v-text-field v-model="cover" label="Cover"></v-text-field>
+        <v-file-input
+                v-model="fileModel"
+                :rules="rules"
+                accept="image/png, image/jpeg, image/bmp"
+                prepend-icon="mdi-camera"
+                label="Imagen"
+                @change="handleFileUpload()"
+        />
+        <v-label>{{addedUrl}}</v-label>
       </v-col>
     </v-row>
 
@@ -99,7 +107,12 @@
       snackbar: false,
       title: '',
       description: '',
-      cover: ''
+      cover: '',
+      fileModel: [],
+      addedUrl: '',
+      rules: [
+        //value => !value || value.size < 2000000 || 'Avatar size should be less than 2 MB!',
+      ],
     }),
     created() {
       console.log('created')
@@ -115,19 +128,28 @@
         vm.title = loadedBook.title;
         vm.description = loadedBook.description;
         vm.cover = loadedBook.cover;
+        vm.addedUrl = vm.cover;
       });
 
       console.log('limpiando los anteriores');
       this.$store.dispatch('loadBookPages', bookId);
     },
     methods: {
+      handleFileUpload: function() {
+        let vm = this;
+        if ((this.fileModel !== undefined) && (this.fileModel.name.length > 0)) {
+          this.$store.dispatch('uploadImageBusiness', this.fileModel).then(function (newUrl) {
+            vm.addedUrl = newUrl
+          });
+        }
+      },
       deleteBook() {
 
       },
       addBook() {
         const data = {
           title: this.title,
-          cover: this.cover,
+          cover: this.addedUrl,
           description: this.description,
           id: this.book.id
         };
