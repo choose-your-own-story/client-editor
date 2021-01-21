@@ -50,10 +50,13 @@
         <v-row>
           <v-col>
             <v-radio-group v-model="targetPageGroup">
-              <v-radio label="Existing page">
-              </v-radio>
-              <v-combobox label="Pages" v-model="selectedTargetPage" :items="bookPages">
-              </v-combobox>
+              <div v-if="bookPages.length > 0">
+                <v-radio label="Existing page">
+                </v-radio>
+
+                <v-combobox label="Pages" v-model="selectedTargetPage" :items="bookPages">
+                </v-combobox>
+              </div>
 
               <v-radio label="New Page">
               </v-radio>
@@ -72,14 +75,25 @@
 
       <v-row>
         <v-col>
-          <v-text-field label="Title" v-model="title"></v-text-field>
+          <v-row>
+            <v-col>
+              <v-text-field label="Title" v-model="title"></v-text-field>
+            </v-col>
+          </v-row>
+          <v-row>
+            <v-col>
+              <v-select :items="pageTypes" label="Page Type" v-model="selectedPageType">
+              </v-select>
+            </v-col>
+          </v-row>
         </v-col>
         <v-col>
           <v-btn @click="updatePageTitle()">
-            Guardar Titulo
+            Guardar
           </v-btn>
         </v-col>
       </v-row>
+
 
       <v-row>
         <v-col>
@@ -130,6 +144,13 @@
           <v-col>
             {{choice.targetPageTitle}}
           </v-col>
+
+          <v-col>
+            <v-btn color="primary" outlined @click="gotoEditLink(choice)">
+              Editar
+            </v-btn>
+          </v-col>
+
           <v-col>
             <v-btn color="red" outlined @click="deletePageChoice(choice)">
               Eliminar
@@ -216,20 +237,44 @@
       rules: [
         value => !value || value.size < 2000000 || 'Avatar size should be less than 2 MB!',
       ],
-      added_url: ''
+      added_url: '',
+      pageTypes: [
+        {
+          text: 'Inicio',
+          value: 0
+        },
+        {
+          text: 'Trama',
+          value: 1
+        },
+        {
+          text: 'Fin',
+          value: 2
+        }
+      ],
+      selectedPageType: 0
     }),
     created() {
-      const vm = this;
-      const data = {
-        bookId: this.$route.params.bookId,
-        pageId: this.$route.params.pageId
-      };
-      this.$store.dispatch('loadPage', data).then(function(data) {
-        vm.title = data.title;
-      });
-      this.$store.dispatch('loadBookPages', this.$route.params.bookId)
+      this.loadThisPage();
+    },
+    beforeRouteUpdate (to, from, next) {
+      console.log('loading....');
+      next();
+      this.loadThisPage();
     },
     methods: {
+      loadThisPage() {
+        const vm = this;
+        const data = {
+          bookId: this.$route.params.bookId,
+          pageId: this.$route.params.pageId
+        };
+        this.$store.dispatch('loadPage', data).then(function(data) {
+          vm.title = data.title;
+          vm.selectedPageType = vm.pageTypes.find(item => item.value === data.page_type).value;
+        });
+        this.$store.dispatch('loadBookPages', this.$route.params.bookId)
+      },
       handleFileUpload: function() {
         let vm = this;
         if ((this.fileModel !== undefined) && (this.fileModel.name.length > 0)) {
@@ -265,11 +310,14 @@
         this.$store.dispatch('addPageItem', data);
       },
       updatePageTitle() {
+        console.log('page type');
+        console.log(this.selectedPageType);
         const data = {
           bookId: this.$route.params.bookId,
           pageId: this.$route.params.pageId,
           page_id: this.$route.params.pageId,
-          title: this.title
+          title: this.title,
+          page_type: this.selectedPageType
         };
         this.$store.dispatch('updatePageTitle', data);
       },
@@ -281,6 +329,9 @@
           choiceId: choice.id
         };
         this.$store.dispatch('deleteChoice', data);
+      },
+      gotoEditLink(choice) {
+        this.$router.push( `/book/${this.$route.params.bookId}/page/${choice.targetPage}`);
       },
       addImage() {
         const vm = this;
@@ -338,15 +389,27 @@
         return this.$store.state.currentPage.choices;
       },
       book() {
-        return this.$store.state.currentBook();
+        return this.$store.state.currentBook;
       },
       bookPages() {
-        return this.$store.state.currentBookPages.map(item => {
+        const vm = this;
+
+
+        const options = this.$store.state.currentBookPages.map(item => {
           return {
             value: item.id,
             text: item.title
           }
+        }).filter(item => {
+          return parseInt(item.value) !== parseInt(vm.$route.params.pageId);
         });
+
+        if (options.length === 0) {
+          console.log('aca');
+          vm.targetPageGroup = 1;
+        }
+
+        return options;
       }
     }
   }

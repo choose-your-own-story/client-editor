@@ -30,6 +30,7 @@ export default new Vuex.Store({
     },
     updateCurrentPageTitle(state, newData) {
       state.currentPage.title = newData.title;
+      state.currentPage.pageType = newData.page_type;
     },
     updateCurrentBook(state, newData) {
       state.currentBook.id = newData.id;
