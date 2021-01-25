@@ -12,7 +12,7 @@ services:
     container_name: editor-history-maker
     image: node:alpine3.12
     command: >
-      sh -c "yarn serve"
+      sh -c "yarn add @vue/cli && yarn serve"
     working_dir: /app/editor
     volumes:
       - ./:/app/
