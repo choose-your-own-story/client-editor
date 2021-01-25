@@ -13,7 +13,7 @@ import { domain, clientId } from "../auth_config.json";
 import { Auth0Plugin } from "./auth";
 
 // Install the authentication plugin here
-Vue.use(Auth0Plugin, {
+/*Vue.use(Auth0Plugin, {
   domain,
   clientId,
   onRedirectCallback: appState => {
@@ -24,7 +24,7 @@ Vue.use(Auth0Plugin, {
     );
   }
 });
-
+*/
 
 Vue.config.productionTip = false
 

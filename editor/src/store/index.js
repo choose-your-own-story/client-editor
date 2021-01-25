@@ -120,7 +120,7 @@ export default new Vuex.Store({
 
       axios({
         method: 'get',
-        url: `http://localhost:3000/api/book/${bookId}/page`,
+        url: `${process.env.VUE_APP_API_HOST}/api/book/${bookId}/page`,
         headers: headers
       }).then(function(response) {
         state.commit('updateCurrentBookPages', response.data)
@@ -138,7 +138,7 @@ export default new Vuex.Store({
 
       axios({
         method: 'get',
-        url: 'http://localhost:3000/api/user/library',
+        url: '${process.env.VUE_APP_API_HOST}/api/user/library',
         headers: headers
       }).then(function(response) {
         state.commit('updateUserLibrary', response.data)
@@ -155,7 +155,7 @@ export default new Vuex.Store({
 
       axios({
         method: 'post',
-        url: 'http://localhost:3000/api/book',
+        url: `${process.env.VUE_APP_API_HOST}/api/book`,
         headers: headers,
         data: bookData
       }).then(function(response) {
@@ -173,7 +173,7 @@ export default new Vuex.Store({
 
       axios({
         method: 'put',
-        url: `http://localhost:3000/api/book/${bookData.id}`,
+        url: `${process.env.VUE_APP_API_HOST}/api/book/${bookData.id}`,
         headers: headers,
         data: bookData
       }).then(function(response) {
@@ -191,7 +191,7 @@ export default new Vuex.Store({
 
       axios({
         method: 'post',
-        url: `http://localhost:3000/api/book/${bookId}/page`,
+        url: `${process.env.VUE_APP_API_HOST}/api/book/${bookId}/page`,
         headers: headers,
         data: {}
       }).then(function(response) {
@@ -209,7 +209,7 @@ export default new Vuex.Store({
 
       axios({
         method: 'post',
-        url: `http://localhost:3000/api/book/${data.bookId}/page/${data.pageId}/item`,
+        url: `${process.env.VUE_APP_API_HOST}/api/book/${data.bookId}/page/${data.pageId}/item`,
         headers: headers,
         data: data
       }).then(function(response) {
@@ -227,7 +227,7 @@ export default new Vuex.Store({
 
       axios({
         method: 'post',
-        url: `http://localhost:3000/api/book/${data.bookId}/page/${data.pageId}/choice`,
+        url: `${process.env.VUE_APP_API_HOST}/api/book/${data.bookId}/page/${data.pageId}/choice`,
         headers: headers,
         data: data
       }).then(function(response) {
@@ -245,7 +245,7 @@ export default new Vuex.Store({
 
       axios({
         method: 'delete',
-        url: `http://localhost:3000/api/book/${data.bookId}/page/${data.pageId}`,
+        url: `${process.env.VUE_APP_API_HOST}/api/book/${data.bookId}/page/${data.pageId}`,
         headers: headers
       }).then(function(response) {
         state.commit('removePageFromCurrentBook', data.pageId)
@@ -262,7 +262,7 @@ export default new Vuex.Store({
 
       axios({
         method: 'delete',
-        url: `http://localhost:3000/api/book/${data.bookId}/page/${data.pageId}/choice/${data.choiceId}`,
+        url: `${process.env.VUE_APP_API_HOST}/api/book/${data.bookId}/page/${data.pageId}/choice/${data.choiceId}`,
         headers: headers
       }).then(function() {
         state.commit('removeChoiceFromCurrentPage', data.choiceId)
@@ -279,7 +279,7 @@ export default new Vuex.Store({
 
       const response = await axios({
         method: 'get',
-        url: `http://localhost:3000/api/book/${data.bookId}/page/${data.pageId}`,
+        url: `${process.env.VUE_APP_API_HOST}/api/book/${data.bookId}/page/${data.pageId}`,
         headers: headers
       });
       state.commit('updateCurrentPage', response.data);
@@ -294,7 +294,7 @@ export default new Vuex.Store({
 
       axios({
         method: 'put',
-        url: `http://localhost:3000/api/book/${data.bookId}/page/${data.pageId}`,
+        url: `${process.env.VUE_APP_API_HOST}/api/book/${data.bookId}/page/${data.pageId}`,
         headers: headers,
         data: data
       }).then(function(response) {
@@ -312,7 +312,7 @@ export default new Vuex.Store({
 
       const response = await axios({
         method: 'get',
-        url: `http://localhost:3000/api/book/${bookId}`,
+        url: `${process.env.VUE_APP_API_HOST}/api/book/${bookId}`,
         headers: headers
       });
 
@@ -329,7 +329,7 @@ export default new Vuex.Store({
 
       axios({
         method: 'delete',
-        url: `http://localhost:3000/api/book/${data.id}`,
+        url: `${process.env.VUE_APP_API_HOST}/api/book/${data.id}`,
         headers: headers
       }).then(function(response) {
         state.commit('removeBookFromCurrentLibrary', data.id);
@@ -338,6 +338,10 @@ export default new Vuex.Store({
       });
     },
     login(state, data) {
+
+      console.log('aaaa');
+      console.log(process.env);
+      console.log(process.env.VUE_APP_API_HOST);
       // Send a POST request
       const headers = {
         'Access-Control-Allow-Origin': '*'
@@ -346,7 +350,7 @@ export default new Vuex.Store({
       return new Promise(function(resolve, reject) {
         axios({
           method: 'post',
-          url: `http://localhost:3000/api/user/login`,
+          url: `${process.env.VUE_APP_API_HOST}/api/user/login`,
           headers: headers,
           data: data
         }).then(function(response) {
@@ -369,7 +373,7 @@ export default new Vuex.Store({
       return new Promise(function(resolve, reject) {
         axios({
           method: 'post',
-          url: `http://localhost:3000/api/user/register`,
+          url: `${process.env.VUE_APP_API_HOST}/api/user/register`,
           headers: headers,
           data: data
         }).then(function(response) {
@@ -396,7 +400,7 @@ export default new Vuex.Store({
         let formData = new FormData();
         formData.append('file', image);
 
-        axios({ url: 'http://localhost:3000/api/upload/image?type=image', data: formData, headers: reqHeaders, method: 'POST' })
+        axios({ url: `${process.env.VUE_APP_API_HOST}/api/upload/image?type=image`, data: formData, headers: reqHeaders, method: 'POST' })
           .then(resp => {
             commit('fileUploaded', resp.data);
             resolve(resp.data)
