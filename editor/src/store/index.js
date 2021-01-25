@@ -138,7 +138,7 @@ export default new Vuex.Store({
 
       axios({
         method: 'get',
-        url: '${process.env.VUE_APP_API_HOST}/api/user/library',
+        url: `${process.env.VUE_APP_API_HOST}/api/user/library`,
         headers: headers
       }).then(function(response) {
         state.commit('updateUserLibrary', response.data)
