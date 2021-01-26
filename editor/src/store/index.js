@@ -182,7 +182,7 @@ export default new Vuex.Store({
         console.log(err);
       });
     },
-    addPage(state, bookId) {
+    addPage(state, data) {
       // Send a POST request
       const headers = {
         'Authorization': `Bearer ${state.state.token}`,
@@ -191,9 +191,9 @@ export default new Vuex.Store({
 
       axios({
         method: 'post',
-        url: `${process.env.VUE_APP_API_HOST}/api/book/${bookId}/page`,
+        url: `${process.env.VUE_APP_API_HOST}/api/book/${data.bookId}/page`,
         headers: headers,
-        data: {}
+        data: data
       }).then(function(response) {
         state.commit('addPageToCurrentBook', response.data)
       }).catch(function(err) {

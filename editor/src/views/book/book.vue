@@ -170,7 +170,16 @@
           return;
         }
 
-        this.$store.dispatch('addPage', this.book.id);
+        const lenPages = this.pages.length;
+        let pageType = 0;
+        if (lenPages > 0)
+          pageType = 1;
+        const data = {
+          bookId: this.book.id,
+          page_type: pageType
+        };
+
+        this.$store.dispatch('addPage', data);
       },
       deletePage(page) {
         const data = {
