@@ -10,15 +10,16 @@ x-logging:
 services:
   api:
     container_name: editor-history-maker
-    image: node:alpine3.12
+    image: jotaram/sm-editor-dev
     command: >
-      sh -c "yarn add @vue/cli && yarn serve"
-    working_dir: /app/editor
+      sh -c "yarn serve"
+    working_dir: /app
     volumes:
       - ./:/app/
     environment:
       NODE_ENV: development.local
       VUE_APP_API_HOST: ${VUE_APP_API_HOST}
+      VUE_APP_PUBLIC_PATH: ${VUE_APP_PUBLIC_PATH}
     logging: *default-logging
     ports:
       - 8088:8080
