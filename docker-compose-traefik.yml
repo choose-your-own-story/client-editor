@@ -16,3 +16,7 @@ services:
         - traefik.http.routers.sm-editor.tls=true
         - traefik.http.routers.sm-editor.tls.certresolver=letsencrypt
         - traefik.http.services.sm-editor.loadbalancer.server.port=80
+        -
+networks:
+  vac-network-traefik:
+    external: true
