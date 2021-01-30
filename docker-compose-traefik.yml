@@ -2,7 +2,7 @@ version: '3'
 
 services:
   sm-editor:
-    image: ramijota/sm-editor:latest
+    image: jotaram/sm-editor:latest
     environment:
       NODE_ENV: production
     networks:
