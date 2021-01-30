@@ -1,0 +1,18 @@
+version: '3'
+
+services:
+  sm-editor:
+    image: ramijota/sm-editor:latest
+    environment:
+      NODE_ENV: production
+    networks:
+      - vac-network-traefik
+    deploy:
+      labels:
+        - traefik.enable=true
+        - traefik.docker.network=vac-network-traefik
+        - traefik.http.routers.sm-editor.entrypoints=websecure
+        - traefik.http.routers.sm-editor.rule=Host(`www.jrojaspin.com.ar`) || Host(`jrojaspin.com.ar`) && PathPrefix(`/story-maker/editor`)
+        - traefik.http.routers.sm-editor.tls=true
+        - traefik.http.routers.sm-editor.tls.certresolver=letsencrypt
+        - traefik.http.services.sm-editor.loadbalancer.server.port=80
