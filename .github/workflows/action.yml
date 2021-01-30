@@ -17,14 +17,12 @@ jobs:
           node-version: 10.16
       - name: instalando dependencias
         run: yarn install
-      - name: corriendo tests
-        run: yarn test:unit
       - name: upload image to dockerhub
         uses: docker/build-push-action@v1
         with:
           username: ${{ secrets.VAC_DOCKER_USER }}
           password: ${{ secrets.VAC_DOCKER_PASSWORD }}
-          repository: santospines/front-end
+          repository: jotaram/sm-editor
           tag_with_ref: true
       - name: deploy prod
         if: contains(github.ref, 'master')
@@ -34,4 +32,4 @@ jobs:
           username: root
           key: ${{ secrets.SSH_KEY }}
           port: 22
-          script: docker service update --image jotaram/sm-editor:master story-maker-editor_sm-editor
+          script: docker service update --image jotaram/sm-editor story-maker-editor_sm-editor
