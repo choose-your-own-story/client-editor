@@ -15,15 +15,6 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: 10.16
-      - name: instalando dependencias
-        run: yarn install
-      - name: upload image to dockerhub
-        uses: docker/build-push-action@v1
-        with:
-          username: ${{ secrets.VAC_DOCKER_USER }}
-          password: ${{ secrets.VAC_DOCKER_PASSWORD }}
-          repository: jotaram/sm-editor
-          tag_with_ref: true
       - name: deploy prod
         if: contains(github.ref, 'master')
         uses: appleboy/ssh-action@master
@@ -41,7 +32,7 @@ jobs:
                         -l traefik.enable=true \
                         -l traefik.docker.network=vac-network-traefik \
                         -l traefik.http.routers.sm-editor.entrypoints=websecure \
-                        -l "traefik.http.routers.sm-editor.rule=Host(`jrojaspin.com.ar`) && PathPrefix(`/story-maker/editor`)" \
+                        -l "traefik.http.routers.sm-editor.rule=Host(\`jrojaspin.com.ar\`) && PathPrefix(\`/story-maker/editor\`)" \
                         -l traefik.http.routers.sm-editor.tls=true \
                         -l traefik.http.services.sm-editor.loadbalancer.server.port=80 \
                         jotaram/sm-editor:latest
