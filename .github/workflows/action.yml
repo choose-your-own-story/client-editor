@@ -20,7 +20,7 @@ jobs:
         uses: JimCronqvist/action-ssh@master
         with:
           hosts: root@${{ secrets.DIGITAL_OCEAN_HOST }}
-          privateKey: ${{ secrets.SSH_KEY }}git
+          privateKey: ${{ secrets.SSH_KEY }}
           command: |
             SERVICES=$(docker service ls --filter name=story-maker-editor_sm-editor --quiet | wc -l)
             if [[ "$SERVICES" -eq 0 ]]; then
