@@ -32,4 +32,4 @@ jobs:
           username: root
           key: ${{ secrets.SSH_KEY }}
           port: 22
-          script: docker service update --image jotaram/sm-editor story-maker-editor_sm-editor
+          script: docker service update --image jotaram/sm-editor:master story-maker-editor_sm-editor
