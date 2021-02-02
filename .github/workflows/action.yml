@@ -20,7 +20,7 @@ jobs:
         uses: JimCronqvist/action-ssh@master
         with:
           hosts: root@${{ secrets.DIGITAL_OCEAN_HOST }}
-          privateKey: ${{ secrets.SSH_KEY }}
+          privateKey: ${{ secrets.SSH_KEY }}git
           command: |
             SERVICES=$(docker service ls --filter name=story-maker-editor_sm-editor --quiet | wc -l)
             if [[ "$SERVICES" -eq 0 ]]; then
@@ -30,7 +30,7 @@ jobs:
                         -l traefik.enable=true \
                         -l traefik.docker.network=vac-network-traefik \
                         -l traefik.http.routers.sm-editor.entrypoints=websecure \
-                        -l 'traefik.http.routers.sm-editor.rule=Host(`jrojaspin.com.ar`) && PathPrefix(`/story-maker/editor`)' \
+                        -l 'traefik.http.routers.sm-editor.rule=Host(`jrojaspin.com.ar`) \&\& PathPrefix(`/story-maker/editor`)' \
                         -l traefik.http.routers.sm-editor.tls=true \
                         -l traefik.http.services.sm-editor.loadbalancer.server.port=80 \
                         jotaram/sm-editor:latest
