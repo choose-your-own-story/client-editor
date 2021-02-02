@@ -17,13 +17,11 @@ jobs:
           node-version: 10.16
       - name: deploy prod
         if: contains(github.ref, 'master')
-        uses: appleboy/ssh-action@master
+        uses: JimCronqvist/action-ssh@master
         with:
-          host: ${{ secrets.DIGITAL_OCEAN_HOST }}
-          username: root
-          key: ${{ secrets.SSH_KEY }}
-          port: 22
-          script: |
+          hosts: root@${{ secrets.DIGITAL_OCEAN_HOST }}
+          privateKey: ${{ secrets.SSH_KEY }}
+          command: |
             SERVICES=$(docker service ls --filter name=story-maker-editor_sm-editor --quiet | wc -l)
             if [[ "$SERVICES" -eq 0 ]]; then
                 docker service create \
@@ -37,6 +35,4 @@ jobs:
                         -l traefik.http.services.sm-editor.loadbalancer.server.port=80 \
                         jotaram/sm-editor:latest
             fi
-            docker service update \
-                        --image jotaram/sm-editor:latest \
-                        story-maker-editor_sm-editor
+            docker service update --image jotaram/sm-editor:latest story-maker-editor_sm-editor
