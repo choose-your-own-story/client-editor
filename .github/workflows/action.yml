@@ -15,26 +15,23 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: 10.16
+      - name: instalando dependencias
+        run: yarn install
+      - name: corriendo tests
+        run: yarn test:unit
+      - name: upload image to dockerhub
+        uses: docker/build-push-action@v1
+        with:
+          username: ${{ secrets.VAC_DOCKER_USER }}
+          password: ${{ secrets.VAC_DOCKER_PASSWORD }}
+          repository: santospines/front-end
+          tag_with_ref: true
       - name: deploy prod
         if: contains(github.ref, 'master')
-        uses: JimCronqvist/action-ssh@master
+        uses: appleboy/ssh-action@master
         with:
-          hosts: root@${{ secrets.DIGITAL_OCEAN_HOST }}
-          privateKey: ${{ secrets.SSH_KEY }}
-          command: |
-            echo "
-            SERVICES=$(docker service ls --filter name=story-maker-editor_sm-editor --quiet | wc -l)
-            if [[ "$SERVICES" -eq 0 ]]; then
-                docker service create \
-                        --name story-maker-editor_sm-editor \
-                        --network vac-network-traefik \
-                        -l traefik.enable=true \
-                        -l traefik.docker.network=vac-network-traefik \
-                        -l traefik.http.routers.sm-editor.entrypoints=websecure \
-                        -l 'traefik.http.routers.sm-editor.rule=Host(`jrojaspin.com.ar`) && PathPrefix(`/story-maker/editor`)' \
-                        -l traefik.http.routers.sm-editor.tls=true \
-                        -l traefik.http.services.sm-editor.loadbalancer.server.port=80 \
-                        jotaram/sm-editor:latest
-            fi
-            docker service update --image jotaram/sm-editor:latest story-maker-editor_sm-editor
-            " | uni2ascii -a U -q
+          host: ${{ secrets.DIGITAL_OCEAN_HOST }}
+          username: root
+          key: ${{ secrets.SSH_KEY }}
+          port: 22
+          script: docker service update --image jotaram/sm-editor:master story-maker-editor_sm-editor
