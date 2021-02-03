@@ -20,7 +20,7 @@ jobs:
         with:
           username: ${{ secrets.VAC_DOCKER_USER }}
           password: ${{ secrets.VAC_DOCKER_PASSWORD }}
-          repository: santospines/front-end
+          repository: jotaram/sm-editor
           tag_with_ref: true
       - name: deploy prod
         if: contains(github.ref, 'master')
