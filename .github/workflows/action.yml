@@ -32,4 +32,4 @@ jobs:
           port: 22
           script: |
             docker pull jotaram/sm-editor:master
-            docker service update --image jotaram/sm-editor:master story-maker-editor_sm-editor
+            docker service update --image jotaram/sm-editor:latest story-maker-editor_sm-editor
