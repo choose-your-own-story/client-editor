@@ -22,6 +22,7 @@ jobs:
           hosts: root@${{ secrets.DIGITAL_OCEAN_HOST }}
           privateKey: ${{ secrets.SSH_KEY }}
           command: |
+            LC_CTYPE=en_US.utf8
             SERVICES=$(docker service ls --filter name=story-maker-editor_sm-editor --quiet | wc -l)
             if [[ "$SERVICES" -eq 0 ]]; then
                 docker service create \
