@@ -15,10 +15,6 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: 10.16
-      - name: instalando dependencias
-        run: yarn install
-      - name: corriendo tests
-        run: yarn test:unit
       - name: upload image to dockerhub
         uses: docker/build-push-action@v1
         with:
