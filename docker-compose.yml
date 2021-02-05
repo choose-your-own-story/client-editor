@@ -23,9 +23,3 @@ services:
     logging: *default-logging
     ports:
       - 8088:8080
-    networks:
-      - history-maker-net
-
-networks:
-  history-maker-net:
-    external: true 
