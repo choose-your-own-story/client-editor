@@ -7,5 +7,5 @@ RUN yarn build --mode production
 
 FROM nginx as production-stage
 RUN mkdir /static
-COPY --from=build-stage /app/dist /static/story-maker/editor
+COPY --from=build-stage /app/dist /static/apps/story-maker/editor
 COPY --from=build-stage /app/deploy/nginx/conf.d/default.conf /etc/nginx/conf.d/default.conf
