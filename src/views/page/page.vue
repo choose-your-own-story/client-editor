@@ -308,6 +308,9 @@
           value: this.paragraph
         };
         this.$store.dispatch('addPageItem', data);
+
+        this.addingParagraph = false;
+        this.paragraph = '';
       },
       updatePageTitle() {
         console.log('page type');
@@ -350,6 +353,9 @@
           console.log(err);
           console.log('unable to upload image');
         });
+
+        this.addingImage = false;
+        this.added_url = '';
       },
       addChoice() {
         let targetPage = 0;
@@ -374,6 +380,11 @@
           targetPageTitle: this.newPageTitle
         };
         this.$store.dispatch('addPageChoice', data);
+
+        this.addingChoice = false;
+        this.targetPageGroup = 0;
+        this.choiceText = '';
+        this.newPageTitle = '';
       }
     },
     computed: {
