@@ -118,7 +118,7 @@
               </div>
           </v-col>
           <v-col>
-            <v-btn color="red" outlined>
+            <v-btn color="red" outlined @click="deleteItem(item)">
               Eliminar
             </v-btn>
           </v-col>
@@ -235,7 +235,7 @@
       title: '',
       fileModel: [],
       rules: [
-        value => !value || value.size < 2000000 || 'Avatar size should be less than 2 MB!',
+        //value => !value || value.size < 2000000 || 'Avatar size should be less than 2 MB!',
       ],
       added_url: '',
       pageTypes: [
@@ -298,6 +298,15 @@
         this.addingChoice = true;
         this.addingImage = false;
         this.addingParagraph = false;
+      },
+      deleteItem(item) {
+        const data = {
+          bookId: this.$route.params.bookId,
+          pageId: this.$route.params.pageId,
+          page_id: this.$route.params.pageId,
+          itemId: item.id
+        };
+        this.$store.dispatch('deletePageItem', data);
       },
       addParagraph() {
         const data = {

@@ -67,9 +67,12 @@ export default new Vuex.Store({
     removeChoiceFromCurrentPage(state, choiceId) {
       state.currentPage.choices = state.currentPage.choices.filter(choice => parseInt(choice.id) !== parseInt(choiceId));
     },
+    removeItemFromCurrentPage(state, itemId) {
+      state.currentPage.items = state.currentPage.items.filter(item => {
+        parseInt(item.id) !== parseInt(itemId)
+      });
+    },
     postAuthentication(state, userData) {
-      console.log('post')
-      console.log(userData);
       if (userData === undefined) {
         state.userName = undefined;
         state.userThumb = undefined;
@@ -266,6 +269,23 @@ export default new Vuex.Store({
         headers: headers
       }).then(function() {
         state.commit('removeChoiceFromCurrentPage', data.choiceId)
+      }).catch(function(err) {
+        console.log(err);
+      });
+    },
+    deletePageItem(state, data) {
+      // Send a POST request
+      const headers = {
+        'Authorization': `Bearer ${state.state.token}`,
+        'Access-Control-Allow-Origin': '*'
+      };
+
+      axios({
+        method: 'delete',
+        url: `${process.env.VUE_APP_API_HOST}/api/book/${data.bookId}/page/${data.pageId}/item/${data.itemId}`,
+        headers: headers
+      }).then(function() {
+        state.commit('removeItemFromCurrentPage', data.itemId)
       }).catch(function(err) {
         console.log(err);
       });
