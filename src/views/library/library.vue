@@ -4,20 +4,23 @@
     <v-text-field label="Buscar"></v-text-field>
 
     <v-row v-for="book in library" :key="book.id">
-      <v-card>
-        <v-card-text>
-          {{book.title}}
-        </v-card-text>
-        <v-card-text>
-          {{book.cover}}
-        </v-card-text>
-        <v-img :src="book.cover" max-width="200" max-height="300"></v-img>
-        <v-card-actions>
-          <v-btn :to="editLink(book)">
-            Editar
-          </v-btn>
-        </v-card-actions>
-      </v-card>
+      <v-col>
+        <v-card>
+          <v-card-text class="title">
+            {{book.title}}
+          </v-card-text>
+          <v-img :src="book.cover" max-width="200" max-height="300"></v-img>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn :to="editLink(book)">
+              Edit
+            </v-btn>
+            <v-btn color="red" outlined @click="deleteBook(book)">
+              Delete
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-col>
     </v-row>
 
   </v-container>
@@ -50,6 +53,14 @@
     methods: {
       editLink(book) {
         return `/book/${book.id}`;
+      },
+      deleteBook(book) {
+        console.log('borrando');
+        console.log(book);
+        let data = {
+          id: book.id
+        };
+        this.$store.dispatch('deleteBook', data);
       }
     },
     computed: {

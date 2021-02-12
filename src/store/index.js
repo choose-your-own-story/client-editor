@@ -50,6 +50,13 @@ export default new Vuex.Store({
     addItemToCurrentPage(state, newItem) {
       state.currentPage.items.push(newItem);
     },
+    updateItemToCurrentPage(state, newItem) {
+      state.currentPage.items.forEach(function(item) {
+        if (item.id === newItem.id) {
+          item.value = newItem.value;
+        }
+      })
+    },
     addChoiceToCurrentPage(state, newItem) {
       state.currentPage.choices.push(newItem);
     },
@@ -69,7 +76,7 @@ export default new Vuex.Store({
     },
     removeItemFromCurrentPage(state, itemId) {
       state.currentPage.items = state.currentPage.items.filter(item => {
-        parseInt(item.id) !== parseInt(itemId)
+        return parseInt(item.id) !== parseInt(itemId)
       });
     },
     postAuthentication(state, userData) {
@@ -156,16 +163,21 @@ export default new Vuex.Store({
         'Access-Control-Allow-Origin': '*'
       };
 
-      axios({
-        method: 'post',
-        url: `${process.env.VUE_APP_API_HOST}/api/book`,
-        headers: headers,
-        data: bookData
-      }).then(function(response) {
-        state.commit('updateCurrentBook', response.data)
-      }).catch(function(err) {
-        console.log(err);
+      return new Promise(function(resolve, reject) {
+        axios({
+          method: 'post',
+          url: `${process.env.VUE_APP_API_HOST}/api/book`,
+          headers: headers,
+          data: bookData
+        }).then(function(response) {
+          state.commit('updateCurrentBook', response.data)
+          resolve(response.data);
+        }).catch(function(err) {
+          console.log(err);
+          reject(err);
+        });
       });
+
     },
     updateBook(state, bookData) {
       // Send a POST request
@@ -210,13 +222,22 @@ export default new Vuex.Store({
         'Access-Control-Allow-Origin': '*'
       };
 
+      let reqMethod = 'post';
+      if (data.id !== undefined)
+        reqMethod = 'put';
+
       axios({
-        method: 'post',
+        method: reqMethod,
         url: `${process.env.VUE_APP_API_HOST}/api/book/${data.bookId}/page/${data.pageId}/item`,
         headers: headers,
         data: data
       }).then(function(response) {
-        state.commit('addItemToCurrentPage', response.data)
+        if (reqMethod === 'post') {
+          state.commit('addItemToCurrentPage', response.data)
+        }
+        else {
+          state.commit('updateItemToCurrentPage', response.data)
+        }
       }).catch(function(err) {
         console.log(err);
       });
@@ -305,7 +326,7 @@ export default new Vuex.Store({
       state.commit('updateCurrentPage', response.data);
       return response.data;
     },
-    updatePageTitle(state, data) {
+    updatePageTitleAndType(state, data) {
       // Send a POST request
       const headers = {
         'Authorization': `Bearer ${state.state.token}`,

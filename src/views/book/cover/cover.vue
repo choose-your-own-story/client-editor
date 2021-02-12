@@ -1,46 +1,48 @@
 <template>
   <v-container>
     <v-row>
-      <v-col cols="3">
+      <v-col>
+        <v-text-field v-model="title" label="Titulo"></v-text-field>
+      </v-col>
+    </v-row>
 
+    <v-row>
+      <v-col>
+        <v-textarea v-model="description" label="Description"></v-textarea>
+      </v-col>
+    </v-row>
+
+    <v-row>
+      <v-col>
+        <v-file-input
+                v-model="fileModel"
+                :rules="rules"
+                accept="image/png, image/jpeg, image/bmp"
+                prepend-icon="mdi-camera"
+                label="Imagen"
+                @change="handleFileUpload()"
+        />
+        <v-label>{{addedUrl}}</v-label>
+      </v-col>
+    </v-row>
+
+    <v-row>
+      <v-col>
+
+      </v-col>
+    </v-row>
+
+    <v-row>
+      <v-col>
+        <v-btn color="secondary" :to="`/book/${this.$route.params.id}`">
+          Volver
+        </v-btn>
       </v-col>
 
       <v-col>
-        <v-row>
-          <v-col>
-            <v-btn @click="gotoCover()">
-              Cover
-            </v-btn>
-          </v-col>
-        </v-row>
-
-        <v-row>
-          <v-col>
-            <v-btn @click="gotoPages()">
-              Pages
-            </v-btn>
-          </v-col>
-        </v-row>
-
-
-        <v-row>
-          <v-col>
-            <v-btn color="secondary" to="/">
-              Go Back Main Page
-            </v-btn>
-          </v-col>
-
-          <v-col>
-            <v-btn color="red" @click="deleteBook()">
-              Delete Book
-            </v-btn>
-          </v-col>
-        </v-row>
-
-      </v-col>
-
-      <v-col cols="3">
-
+        <v-btn color="primary" @click="addBook()">
+          Guardar
+        </v-btn>
       </v-col>
     </v-row>
 
@@ -100,26 +102,6 @@
       this.$store.dispatch('loadBookPages', bookId);
     },
     methods: {
-      gotoCover: function() {
-        const vm = this;
-
-        this.$router.push({
-          name: 'Cover',
-          params: {
-            id: vm.$route.params.id
-          }
-        })
-      },
-      gotoPages: function() {
-        const vm = this;
-
-        this.$router.push({
-          name: 'Pages',
-          params: {
-            id: vm.$route.params.id
-          }
-        })
-      },
       handleFileUpload: function() {
         let vm = this;
         if ((this.fileModel !== undefined) && (this.fileModel.name.length > 0)) {
@@ -127,12 +109,6 @@
             vm.addedUrl = newUrl
           });
         }
-      },
-      deleteBook() {
-        let vm = this;
-        this.$store.dispatch('deleteBook', {id: this.$route.params.id}).then(function() {
-          vm.$router.push({name: 'Library'})
-        })
       },
       addBook() {
         const data = {
@@ -148,45 +124,11 @@
         else {
           this.$store.dispatch('updateBook', data);
         }
-      },
-      addPage() {
-        const vm = this;
-
-        if (this.book.id === undefined) {
-          this.errorMessage = 'Hay que guardar el libro antes de agregar una pagina';
-          this.snackbar = true;
-          return;
-        }
-
-        const lenPages = this.pages.length;
-        let pageType = 0;
-        if (lenPages > 0)
-          pageType = 1;
-        const data = {
-          bookId: this.book.id,
-          page_type: pageType
-        };
-
-        this.$store.dispatch('addPage', data);
-      },
-      deletePage(page) {
-        const data = {
-          bookId: this.book.id,
-          pageId: page.id
-        };
-
-        this.$store.dispatch('deletePage', data);
-      },
-      buildEditLink(page) {
-        return `/book/${this.book.id}/page/${page.id}`;
       }
     },
     computed: {
       book() {
         return this.$store.state.currentBook;
-      },
-      pages() {
-        return this.$store.state.currentBookPages;
       }
     }
   }

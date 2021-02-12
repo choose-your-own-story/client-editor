@@ -1,100 +1,179 @@
 <template>
   <div id="create">
+    <v-dialog v-model="addingParagraph">
+      <v-card>
+        <v-container>
+          <v-row>
+            <v-col>
+              <v-textarea label="New Paragraph" v-model="paragraph"></v-textarea>
+            </v-col>
+          </v-row>
+        </v-container>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn @click="addParagraph()">
+            Add
+          </v-btn>
+          <v-btn @click="addingParagraph = false">
+            Cancel
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
 
-    <v-container fluid>
-      <v-container v-if="addingParagraph">
-        <v-row>
-          <v-col>
-            <v-textarea label="New Paragraph" v-model="paragraph"></v-textarea>
-          </v-col>
-        </v-row>
-        <v-row>
-          <v-col>
-            <v-btn @click="addParagraph()">
-              Add
-            </v-btn>
-          </v-col>
-        </v-row>
-      </v-container>
+    <v-container>
 
-      <v-container v-if="addingImage">
-        <v-row>
-          <v-col>
-            <v-file-input
-                    v-model="fileModel"
-                    :rules="rules"
-                    accept="image/png, image/jpeg, image/bmp"
-                    prepend-icon="mdi-camera"
-                    label="Imagen"
-                    outlined
-                    @change="handleFileUpload()"
-            />
-            <v-label>{{added_url}}</v-label>
-          </v-col>
-        </v-row>
-        <v-row>
-          <v-col>
+      <v-dialog v-model="addingImage">
+        <v-card>
+          <v-container>
+            <v-row>
+              <v-col>
+                <v-file-input
+                        v-model="fileModel"
+                        :rules="rules"
+                        accept="image/png, image/jpeg, image/bmp"
+                        prepend-icon="mdi-camera"
+                        label="Imagen"
+                        outlined
+                        @change="handleFileUpload()"
+                />
+                <v-label>{{added_url}}</v-label>
+              </v-col>
+            </v-row>
+          </v-container>
+          <v-card-actions>
+            <v-spacer></v-spacer>
             <v-btn @click="addImage()">
               Add
             </v-btn>
-          </v-col>
-        </v-row>
-      </v-container>
+            <v-btn @click="addingImage = false">Cancel</v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
 
-      <v-container v-if="addingChoice">
-        <v-row>
-          <v-col>
-            <v-text-field label="Choice description" v-model="choiceText"></v-text-field>
-          </v-col>
-        </v-row>
-        <v-row>
-          <v-col>
-            <v-radio-group v-model="targetPageGroup">
-              <div v-if="bookPages.length > 0">
-                <v-radio label="Existing page">
-                </v-radio>
+      <v-dialog v-model="addingChoice">
+        <v-card>
+          <v-container>
+            <v-row>
+              <v-col>
+                <v-text-field label="Choice description" v-model="choiceText"></v-text-field>
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col>
+                <v-radio-group v-model="targetPageGroup">
+                  <div v-if="bookPages.length > 0">
+                    <v-radio label="Existing page">
+                    </v-radio>
 
-                <v-combobox label="Pages" v-model="selectedTargetPage" :items="bookPages">
-                </v-combobox>
-              </div>
+                    <v-combobox label="Pages" v-model="selectedTargetPage" :items="bookPages">
+                    </v-combobox>
+                  </div>
 
-              <v-radio label="New Page">
-              </v-radio>
-              <v-text-field v-model="newPageTitle" label="Title"></v-text-field>
-            </v-radio-group>
-          </v-col>
-        </v-row>
-        <v-row>
-          <v-col>
+                  <v-radio label="New Page">
+                  </v-radio>
+                  <v-text-field v-model="newPageTitle" label="Title"></v-text-field>
+                </v-radio-group>
+              </v-col>
+            </v-row>
+          </v-container>
+          <v-card-actions>
+            <v-spacer></v-spacer>
             <v-btn @click="addChoice()">
               Add
             </v-btn>
-          </v-col>
-        </v-row>
-      </v-container>
+            <v-btn @click="addingChoice=false">Cancel</v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+
+      <v-dialog v-model="addingMetadata">
+        <v-card>
+          <v-container>
+            <v-row>
+              <v-col>
+                <v-row>
+                  <v-col>
+                    <v-text-field label="Title" v-model="title"></v-text-field>
+                  </v-col>
+                </v-row>
+                <v-row>
+                  <v-col>
+                    <v-select :items="pageTypes" label="Page Type" v-model="selectedPageType">
+                    </v-select>
+                  </v-col>
+                </v-row>
+              </v-col>
+            </v-row>
+          </v-container>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn @click="updatePageTitleAndType()">
+              Guardar
+            </v-btn>
+            <v-btn @click="addingMetadata=false">Cancel</v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
 
       <v-row>
         <v-col>
-          <v-row>
-            <v-col>
-              <v-text-field label="Title" v-model="title"></v-text-field>
-            </v-col>
-          </v-row>
-          <v-row>
-            <v-col>
-              <v-select :items="pageTypes" label="Page Type" v-model="selectedPageType">
-              </v-select>
-            </v-col>
-          </v-row>
+          <v-btn
+                  color="orange"
+                  dark
+                  @click="showAddMetadata()"
+          >
+            Edit Title and Type
+            <v-icon>mdi-pencil</v-icon>
+          </v-btn>
         </v-col>
+
         <v-col>
-          <v-btn @click="updatePageTitle()">
-            Guardar
+          <v-btn
+                  color="green"
+                  dark
+                  @click="showAddChoice()"
+          >
+            Add Choice
+            <v-icon>mdi-family-tree</v-icon>
+          </v-btn>
+        </v-col>
+
+        <v-col>
+          <v-btn
+                  dark
+                  color="indigo"
+                  @click="showAddImage()"
+          >
+            Add Image
+            <v-icon>mdi-image</v-icon>
+          </v-btn>
+        </v-col>
+
+        <v-col>
+          <v-btn
+                  dark
+                  color="red"
+                  @click="showAddParagraph()"
+          >
+            Add Paragraph
+            <v-icon>mdi-text-subject</v-icon>
           </v-btn>
         </v-col>
       </v-row>
 
+      <v-row>
+        <v-col>
 
+        </v-col>
+      </v-row>
+
+      <v-divider></v-divider>
+      <v-row>
+        <v-col>
+
+        </v-col>
+      </v-row>
       <v-row>
         <v-col>
           <v-label>
@@ -120,6 +199,11 @@
           <v-col>
             <v-btn color="red" outlined @click="deleteItem(item)">
               Eliminar
+            </v-btn>
+          </v-col>
+          <v-col v-if="item.type === 1">
+            <v-btn color="blue" outlined @click="showEditParagraph(item)">
+              Edit
             </v-btn>
           </v-col>
         </v-row>
@@ -160,60 +244,6 @@
       </v-container>
     </v-container>
 
-    <v-speed-dial
-            v-model="fab"
-            :bottom="true"
-            :right="true"
-            direction="top"
-            :open-on-hover="false"
-            transition="slide-y-reverse-transition"
-    >
-      <template v-slot:activator>
-        <v-btn
-                v-model="fab"
-                color="blue darken-2"
-                dark
-                fab
-        >
-          <v-icon v-if="fab">
-            mdi-close
-          </v-icon>
-          <v-icon v-else>
-            mdi-account-circle
-          </v-icon>
-        </v-btn>
-      </template>
-
-      <v-btn
-              fab
-              dark
-              small
-              color="green"
-              @click="showAddChoice()"
-      >
-        <v-icon>mdi-family-tree</v-icon>
-      </v-btn>
-      <v-btn
-              fab
-              dark
-              small
-              color="indigo"
-              @click="showAddImage()"
-      >
-        <v-icon>mdi-image</v-icon>
-      </v-btn>
-
-      <v-btn
-              fab
-              dark
-              small
-              color="red"
-              @click="showAddParagraph()"
-      >
-        <v-icon>mdi-text-subject</v-icon>
-      </v-btn>
-    </v-speed-dial>
-
   </div>
 </template>
 
@@ -222,10 +252,12 @@
     name: 'NewBook',
 
     data: () => ({
+      addingMetadata: false,
       addingParagraph: false,
       addingImage: false,
       addingChoice: false,
       paragraph: '',
+      paragraphId: undefined,
       image: '',
       choiceText: '',
       fab: false,
@@ -288,16 +320,33 @@
         this.addingChoice = false;
         this.addingImage = false;
         this.addingParagraph = true;
+        this.addingMetadata = false;
+      },
+      showEditParagraph(item) {
+        this.addingChoice = false;
+        this.addingImage = false;
+        this.addingParagraph = true;
+        this.addingMetadata = false;
+        this.paragraph = item.value;
+        this.paragraphId = item.id;
       },
       showAddImage() {
         this.addingChoice = false;
         this.addingImage = true;
         this.addingParagraph = false;
+        this.addingMetadata = false;
+      },
+      showAddMetadata() {
+        this.addingChoice = false;
+        this.addingImage = false;
+        this.addingParagraph = false;
+        this.addingMetadata = true;
       },
       showAddChoice() {
         this.addingChoice = true;
         this.addingImage = false;
         this.addingParagraph = false;
+        this.addingMetadata = false;
       },
       deleteItem(item) {
         const data = {
@@ -314,14 +363,15 @@
           pageId: this.$route.params.pageId,
           page_id: this.$route.params.pageId,
           item_type: 1,
-          value: this.paragraph
+          value: this.paragraph,
+          id: this.paragraphId
         };
         this.$store.dispatch('addPageItem', data);
 
         this.addingParagraph = false;
         this.paragraph = '';
       },
-      updatePageTitle() {
+      updatePageTitleAndType() {
         console.log('page type');
         console.log(this.selectedPageType);
         const data = {
@@ -331,7 +381,7 @@
           title: this.title,
           page_type: this.selectedPageType
         };
-        this.$store.dispatch('updatePageTitle', data);
+        this.$store.dispatch('updatePageTitleAndType', data);
       },
       deletePageChoice(choice) {
         const data = {
@@ -425,7 +475,6 @@
         });
 
         if (options.length === 0) {
-          console.log('aca');
           vm.targetPageGroup = 1;
         }
 
@@ -434,14 +483,3 @@
     }
   }
 </script>
-
-<style>
-  /* This is for documentation purposes and will not be needed in your application */
-  #create .v-speed-dial {
-    position: absolute;
-  }
-
-  #create .v-btn--floating {
-    position: relative;
-  }
-</style>

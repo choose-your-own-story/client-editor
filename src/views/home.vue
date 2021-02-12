@@ -1,10 +1,18 @@
 <template>
   <v-container>
 
-    <v-row v-for="item in items" class="text-center" v-if="isAuthenticated">
+    <v-row class="text-center" v-if="isAuthenticated">
       <v-col>
-        <v-btn :to="item.href">
-          {{item.text}}
+        <v-btn @click="addNewBook()">
+          Add new book
+        </v-btn>
+      </v-col>
+    </v-row>
+
+    <v-row class="text-center" v-if="isAuthenticated">
+      <v-col>
+        <v-btn @click="gotoLibrary()">
+          My Books
         </v-btn>
       </v-col>
     </v-row>
@@ -26,18 +34,31 @@
     name: 'HelloWorld',
 
     data: () => ({
-      items: [
-        {
-          text: 'Crear un libro nuevo',
-          href: '/book/new',
-        },
-        {
-          text: 'Mis libros',
-          href: '/user/library',
-        }
-      ],
     }),
     methods: {
+      addNewBook() {
+        const data = {
+          title: 'new book',
+          cover: '',
+          description: 'no cool description yet!'
+        };
+
+        const vm = this;
+
+        this.$store.dispatch('addBook', data).then(function(data) {
+          vm.$router.push({
+            name: 'Book',
+            params: {
+              id: data.id
+            }
+          })
+        });
+      },
+      gotoLibrary() {
+        this.$router.push({
+          name: 'Library'
+        })
+      }
     },
     computed: {
       isAuthenticated() {
