@@ -22,6 +22,9 @@
                   <p>
                     Reads: {{book.reads}}
                   </p>
+                  <p>
+                    Active: {{book.active === 1? 'Activo' : 'No activo'}}
+                  </p>
                 </span>
               </v-col>
 
