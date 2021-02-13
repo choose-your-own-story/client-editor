@@ -21,103 +21,103 @@
       </v-card>
     </v-dialog>
 
+    <v-dialog v-model="addingImage">
+      <v-card>
+        <v-container>
+          <v-row>
+            <v-col>
+              <v-file-input
+                      v-model="fileModel"
+                      :rules="rules"
+                      accept="image/png, image/jpeg, image/bmp"
+                      prepend-icon="mdi-camera"
+                      label="Imagen"
+                      outlined
+                      @change="handleFileUpload()"
+              />
+              <v-label>{{added_url}}</v-label>
+            </v-col>
+          </v-row>
+        </v-container>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn @click="addImage()">
+            Add
+          </v-btn>
+          <v-btn @click="addingImage = false">Cancel</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
+    <v-dialog v-model="addingChoice">
+      <v-card>
+        <v-container>
+          <v-row>
+            <v-col>
+              <v-text-field label="Choice description" v-model="choiceText"></v-text-field>
+            </v-col>
+          </v-row>
+          <v-row>
+            <v-col>
+              <v-radio-group v-model="targetPageGroup">
+                <div v-if="bookPages.length > 0">
+                  <v-radio label="Existing page">
+                  </v-radio>
+
+                  <v-select label="Pages" v-model="selectedTargetPage" :items="bookPages">
+                  </v-select>
+                </div>
+
+                <v-radio label="New Page">
+                </v-radio>
+                <v-text-field v-model="newPageTitle" label="Title"></v-text-field>
+              </v-radio-group>
+            </v-col>
+          </v-row>
+        </v-container>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn @click="addChoice()">
+            Add
+          </v-btn>
+          <v-btn @click="addingChoice=false">Cancel</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
+    <v-dialog v-model="addingMetadata">
+      <v-card>
+        <v-container>
+          <v-row>
+            <v-col>
+              <v-row>
+                <v-col>
+                  <v-text-field label="Title" v-model="title"></v-text-field>
+                </v-col>
+              </v-row>
+              <v-row>
+                <v-col>
+                  <v-select :items="pageTypes" label="Page Type" v-model="selectedPageType">
+                  </v-select>
+                </v-col>
+              </v-row>
+            </v-col>
+          </v-row>
+        </v-container>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn @click="updatePageTitleAndType()">
+            Guardar
+          </v-btn>
+          <v-btn @click="addingMetadata=false">Cancel</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
     <v-container>
 
-      <v-dialog v-model="addingImage">
-        <v-card>
-          <v-container>
-            <v-row>
-              <v-col>
-                <v-file-input
-                        v-model="fileModel"
-                        :rules="rules"
-                        accept="image/png, image/jpeg, image/bmp"
-                        prepend-icon="mdi-camera"
-                        label="Imagen"
-                        outlined
-                        @change="handleFileUpload()"
-                />
-                <v-label>{{added_url}}</v-label>
-              </v-col>
-            </v-row>
-          </v-container>
-          <v-card-actions>
-            <v-spacer></v-spacer>
-            <v-btn @click="addImage()">
-              Add
-            </v-btn>
-            <v-btn @click="addingImage = false">Cancel</v-btn>
-          </v-card-actions>
-        </v-card>
-      </v-dialog>
-
-      <v-dialog v-model="addingChoice">
-        <v-card>
-          <v-container>
-            <v-row>
-              <v-col>
-                <v-text-field label="Choice description" v-model="choiceText"></v-text-field>
-              </v-col>
-            </v-row>
-            <v-row>
-              <v-col>
-                <v-radio-group v-model="targetPageGroup">
-                  <div v-if="bookPages.length > 0">
-                    <v-radio label="Existing page">
-                    </v-radio>
-
-                    <v-combobox label="Pages" v-model="selectedTargetPage" :items="bookPages">
-                    </v-combobox>
-                  </div>
-
-                  <v-radio label="New Page">
-                  </v-radio>
-                  <v-text-field v-model="newPageTitle" label="Title"></v-text-field>
-                </v-radio-group>
-              </v-col>
-            </v-row>
-          </v-container>
-          <v-card-actions>
-            <v-spacer></v-spacer>
-            <v-btn @click="addChoice()">
-              Add
-            </v-btn>
-            <v-btn @click="addingChoice=false">Cancel</v-btn>
-          </v-card-actions>
-        </v-card>
-      </v-dialog>
-
-      <v-dialog v-model="addingMetadata">
-        <v-card>
-          <v-container>
-            <v-row>
-              <v-col>
-                <v-row>
-                  <v-col>
-                    <v-text-field label="Title" v-model="title"></v-text-field>
-                  </v-col>
-                </v-row>
-                <v-row>
-                  <v-col>
-                    <v-select :items="pageTypes" label="Page Type" v-model="selectedPageType">
-                    </v-select>
-                  </v-col>
-                </v-row>
-              </v-col>
-            </v-row>
-          </v-container>
-          <v-card-actions>
-            <v-spacer></v-spacer>
-            <v-btn @click="updatePageTitleAndType()">
-              Guardar
-            </v-btn>
-            <v-btn @click="addingMetadata=false">Cancel</v-btn>
-          </v-card-actions>
-        </v-card>
-      </v-dialog>
-
       <v-row>
-        <v-col>
+        <v-col cols="4">
           <v-btn
                   color="orange"
                   dark
@@ -129,17 +129,39 @@
         </v-col>
 
         <v-col>
+          <p>
+            Agrega un titulo a esta pagina para hacer mas facil la edicion del libro.
+          </p>
+          <p>
+            El lector no va a ver el titulo de la pagina.
+          </p>
+          <p>
+            Ademas, marcala segun es un posible inicio, una pagina de trama, o un final.
+            Cuando el lector empiece, iniciara en alguna de las paginas marcadas como "iniciales".
+          </p>
+        </v-col>
+      </v-row>
+
+      <v-row>
+        <v-col cols="4">
           <v-btn
-                  color="green"
                   dark
-                  @click="showAddChoice()"
+                  color="red"
+                  @click="showAddParagraph()"
           >
-            Add Choice
-            <v-icon>mdi-family-tree</v-icon>
+            Add Paragraph
+            <v-icon>mdi-text-subject</v-icon>
           </v-btn>
         </v-col>
-
         <v-col>
+          <p>
+            Agrega tantos parrafos como quieras a esta hoja. Se hace asi para que puedas intercalar imagenes
+          </p>
+        </v-col>
+      </v-row>
+
+      <v-row>
+        <v-col cols="4">
           <v-btn
                   dark
                   color="indigo"
@@ -151,14 +173,27 @@
         </v-col>
 
         <v-col>
+          <p>
+            Agrega una imagen a esta pagina
+          </p>
+        </v-col>
+      </v-row>
+
+      <v-row>
+        <v-col cols="4">
           <v-btn
+                  color="green"
                   dark
-                  color="red"
-                  @click="showAddParagraph()"
+                  @click="showAddChoice()"
           >
-            Add Paragraph
-            <v-icon>mdi-text-subject</v-icon>
+            Add Choice
+            <v-icon>mdi-family-tree</v-icon>
           </v-btn>
+        </v-col>
+        <v-col>
+          <p>
+            Agrega una opcion para que el usuario elija. Puedes ir desde aca a una pagina ya existente (se identifican por el titulo que les das) o a una pagina nueva
+          </p>
         </v-col>
       </v-row>
 
@@ -169,11 +204,13 @@
       </v-row>
 
       <v-divider></v-divider>
+
       <v-row>
         <v-col>
 
         </v-col>
       </v-row>
+
       <v-row>
         <v-col>
           <v-label>
@@ -184,7 +221,7 @@
 
       <v-container>
         <v-row v-for="item in items" :key="item.id">
-          <v-col>
+          <v-col cols="8">
               <div v-if="item.type===2">
                 <v-img :src="item.value" max-width="200" max-height="300">
 
@@ -196,14 +233,14 @@
                 </p>
               </div>
           </v-col>
-          <v-col>
-            <v-btn color="red" outlined @click="deleteItem(item)">
-              Eliminar
-            </v-btn>
-          </v-col>
-          <v-col v-if="item.type === 1">
+          <v-col v-if="item.type === 1" cols="2">
             <v-btn color="blue" outlined @click="showEditParagraph(item)">
               Edit
+            </v-btn>
+          </v-col>
+          <v-col cols="2">
+            <v-btn color="red" outlined @click="deleteItem(item)">
+              Delete
             </v-btn>
           </v-col>
         </v-row>
@@ -219,29 +256,48 @@
 
       <v-container>
         <v-row v-for="choice in choices" :key="choice.id">
-          <v-col>
+          <v-col cols="6">
             {{choice.value}}
           </v-col>
-          <v-col>
-            {{choice.targetPage}}
-          </v-col>
-          <v-col>
+          <v-col cols="2">
             {{choice.targetPageTitle}}
           </v-col>
 
-          <v-col>
+          <v-col cols="2">
             <v-btn color="primary" outlined @click="gotoEditLink(choice)">
-              Editar
+              Open
             </v-btn>
           </v-col>
 
-          <v-col>
+          <v-col cols="2">
             <v-btn color="red" outlined @click="deletePageChoice(choice)">
-              Eliminar
+              Delete
             </v-btn>
           </v-col>
         </v-row>
       </v-container>
+
+
+      <v-row>
+        <v-col>
+
+        </v-col>
+      </v-row>
+
+      <v-divider></v-divider>
+      <v-row>
+        <v-col>
+
+        </v-col>
+      </v-row>
+
+      <v-row>
+        <v-col>
+          <v-btn @click="gotoBack()" color="secondary">
+            Back
+          </v-btn>
+        </v-col>
+      </v-row>
     </v-container>
 
   </div>
@@ -295,6 +351,9 @@
       this.loadThisPage();
     },
     methods: {
+      gotoBack() {
+        this.$router.go(-1);
+      },
       loadThisPage() {
         const vm = this;
         const data = {
@@ -372,8 +431,8 @@
         this.paragraph = '';
       },
       updatePageTitleAndType() {
-        console.log('page type');
-        console.log(this.selectedPageType);
+        let vm = this;
+
         const data = {
           bookId: this.$route.params.bookId,
           pageId: this.$route.params.pageId,
@@ -381,7 +440,10 @@
           title: this.title,
           page_type: this.selectedPageType
         };
-        this.$store.dispatch('updatePageTitleAndType', data);
+
+        this.$store.dispatch('updatePageTitleAndType', data).then(function(newData) {
+          vm.addingMetadata = false;
+        });
       },
       deletePageChoice(choice) {
         const data = {

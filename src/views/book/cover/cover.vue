@@ -34,7 +34,7 @@
 
     <v-row>
       <v-col>
-        <v-btn color="secondary" :to="`/book/${this.$route.params.id}`">
+        <v-btn color="secondary" @click="gotoBack()">
           Volver
         </v-btn>
       </v-col>
@@ -118,12 +118,25 @@
           id: this.book.id
         };
 
+        const vm = this;
+
+        let callback = undefined;
         if (this.book.id === undefined) {
-          this.$store.dispatch('addBook', data);
+          callback = this.$store.dispatch('addBook', data);
+        } else {
+          callback = this.$store.dispatch('updateBook', data);
         }
-        else {
-          this.$store.dispatch('updateBook', data);
-        }
+        callback.then(function () {
+          vm.gotoBack();
+        })
+      },
+      gotoBack() {
+        this.$router.push({
+          name: 'Book',
+          params: {
+            id: this.$route.params.id
+          }
+        })
       }
     },
     computed: {

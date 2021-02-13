@@ -6,21 +6,21 @@
       dark
     >
         <div class="d-flex align-center">
-            <v-btn to="/" icon>
+            <v-btn @click="gotoHome()" icon>
                 <v-avatar>
                     <v-img
-                      alt="History Maker"
+                      alt="Elige tu propia aventura - Editor de historias"
                       class="shrink mr-2"
                       contain
-                      src="logo.png"
+                      :src="logoUrl()"
                       transition="scale-transition"
                       width="40"
                     />
                 </v-avatar>
             </v-btn>
         </div>
-        <span class="text-h4">
-            History Maker
+        <span class="text-h5">
+            Elige tu propia aventura - Editor
         </span>
 
         <v-spacer></v-spacer>
@@ -171,10 +171,23 @@ export default {
     fileModel: [],
     added_url: '',
     rules: [
-      value => !value || value.size < 2000000 || 'Avatar size should be less than 2 MB!',
+      // value => !value || value.size < 2000000 || 'Avatar size should be less than 2 MB!',
     ],
   }),
     methods: {
+      logoUrl() {
+        let pp = process.env.VUE_APP_PUBLIC_PATH;
+        console.log(pp);
+        if (pp.charAt(pp.length -1) !== '/')
+            pp = `${pp}/`;
+        console.log(pp);
+        return `${pp}logo.png`;
+      },
+      gotoHome() {
+        this.$router.push({
+          name: 'Home'
+        })
+      },
       handleFileUpload: function() {
         let vm = this;
         if ((this.fileModel !== undefined) && (this.fileModel.name.length > 0)) {

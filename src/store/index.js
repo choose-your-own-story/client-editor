@@ -332,17 +332,20 @@ export default new Vuex.Store({
         'Authorization': `Bearer ${state.state.token}`,
         'Access-Control-Allow-Origin': '*'
       };
-
-      axios({
-        method: 'put',
-        url: `${process.env.VUE_APP_API_HOST}/api/book/${data.bookId}/page/${data.pageId}`,
-        headers: headers,
-        data: data
-      }).then(function(response) {
-        state.commit('updateCurrentPageTitle', response.data)
-      }).catch(function(err) {
-        console.log(err);
-      });
+      return new Promise(function(resolve, reject) {
+        axios({
+          method: 'put',
+          url: `${process.env.VUE_APP_API_HOST}/api/book/${data.bookId}/page/${data.pageId}`,
+          headers: headers,
+          data: data
+        }).then(function(response) {
+          state.commit('updateCurrentPageTitle', response.data)
+          resolve(response.data)
+        }).catch(function(err) {
+          console.log(err);
+          reject(err);
+        });
+      })
     },
     async loadBook(state, bookId) {
       // Send a POST request
