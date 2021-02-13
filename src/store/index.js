@@ -18,9 +18,13 @@ export default new Vuex.Store({
     token: localStorage.getItem('token') || '',
     userName: localStorage.getItem('user_name') || '',
     userThumb: localStorage.getItem('user_thumb') || '',
-    uploadedData: ''
+    uploadedData: '',
+    genres: []
   },
   mutations: {
+    setGenres(state, data) {
+      state.genres = data;
+    },
     fileUploaded(state, data) {
       state.uploadedData = data;
     },
@@ -138,8 +142,24 @@ export default new Vuex.Store({
         console.log(err);
       });
     },
+    loadGenres(state) {
+      // Send a POST request
+      const headers = {
+        'Authorization': `Bearer ${state.state.token}`,
+        'Access-Control-Allow-Origin': '*'
+      };
+
+      axios({
+        method: 'get',
+        url: `${process.env.VUE_APP_API_HOST}/api/library/genre`,
+        headers: headers
+      }).then(function(response) {
+        state.commit('setGenres', response.data)
+      }).catch(function(err) {
+        console.log(err);
+      });
+    },
     loadUserBooks(state) {
-      console.log('state token');
       // Send a POST request
       const headers = {
         'Authorization': `Bearer ${state.state.token}`,

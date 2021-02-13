@@ -1,7 +1,7 @@
 <template>
   <v-container>
 
-    <v-text-field label="Buscar"></v-text-field>
+    <v-text-field label="Buscar" v-model="filterText"></v-text-field>
 
     <v-row v-for="book in library" :key="book.id">
       <v-col>
@@ -9,10 +9,27 @@
           <v-card-text class="title">
             {{book.title}}
           </v-card-text>
-          <v-img :src="book.cover" max-width="200" max-height="300"></v-img>
+          <v-card-text>
+            <v-row>
+              <v-col cols="4">
+                <v-img :src="book.cover" max-width="200" max-height="300"></v-img>
+              </v-col>
+              <v-col>
+                <span>
+                  <p>
+                    Likes: {{book.likes}}
+                  </p>
+                  <p>
+                    Reads: {{book.reads}}
+                  </p>
+                </span>
+              </v-col>
+
+            </v-row>
+          </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn :to="editLink(book)">
+            <v-btn :to="editLink(book)" outlined color="primary">
               Edit
             </v-btn>
             <v-btn color="red" outlined @click="deleteBook(book)">
@@ -31,21 +48,7 @@
     name: 'NewBook',
 
     data: () => ({
-      notifications: [
-        {
-          id: 1,
-          text: 'hola, quisiera pedir permiso para clonar tu libro',
-          sender: {
-            name: 'Agustin'
-          },
-          target: {
-            id: 1,
-            title: 'la atlantida',
-            link: '/book/1'
-          },
-          action: 1
-        }
-      ]
+      filterText: ''
     }),
     created() {
       this.$store.dispatch('loadUserBooks');
@@ -55,9 +58,7 @@
         return `/book/${book.id}`;
       },
       deleteBook(book) {
-        console.log('borrando');
-        console.log(book);
-        let data = {
+        const data = {
           id: book.id
         };
         this.$store.dispatch('deleteBook', data);
@@ -65,7 +66,12 @@
     },
     computed: {
       library() {
-        return this.$store.state.userLibrary;
+        const allBooks = this.$store.state.userLibrary;
+        console.log(`filtrando por ${this.filterText}`)
+        if (this.filterText === '') {
+          return allBooks;
+        }
+        return allBooks.filter(item => item.title.includes(this.filterText));
       }
     }
   }

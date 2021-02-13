@@ -25,6 +25,30 @@
         <v-label>{{addedUrl}}</v-label>
       </v-col>
     </v-row>
+    <v-row>
+      <v-col align="center">
+        <v-img :src="addedUrl" max-width="200">
+        </v-img>
+      </v-col>
+    </v-row>
+
+    <v-row>
+      <v-col>
+        <v-select label="Genre" v-model="selectedGenre" :items="genres">
+        </v-select>
+      </v-col>
+      <v-col>
+        <v-select label="Sub Genre" v-model="selectedSubGenre" :items="genreSubGenres">
+        </v-select>
+      </v-col>
+    </v-row>
+
+    <v-row>
+      <v-col>
+        <v-checkbox label="Libro terminado. Seleccionar esta opcion para que aparezca en la libreria." v-model="active">
+        </v-checkbox>
+      </v-col>
+    </v-row>
 
     <v-row>
       <v-col>
@@ -77,29 +101,29 @@
       cover: '',
       fileModel: [],
       addedUrl: '',
+      active: 0,
       rules: [
         //value => !value || value.size < 2000000 || 'Avatar size should be less than 2 MB!',
       ],
+      selectedGenre: undefined,
+      selectedSubGenre: undefined
     }),
     created() {
-      console.log('created')
       this.$store.commit('emptyCurrentBookPages');
       const bookId = this.$route.params.id;
       const vm = this;
-      if (bookId === 'new') {
-
-        return;
-      }
 
       this.$store.dispatch('loadBook', bookId).then(function(loadedBook) {
         vm.title = loadedBook.title;
         vm.description = loadedBook.description;
         vm.cover = loadedBook.cover;
-        vm.addedUrl = vm.cover;
+        vm.addedUrl = loadedBook.cover;
+        vm.selectedGenre = loadedBook.idGenre;
+        vm.selectedSubGenre = loadedBook.idSubGenre;
+        vm.active = loadedBook.active;
       });
-
-      console.log('limpiando los anteriores');
       this.$store.dispatch('loadBookPages', bookId);
+      this.$store.dispatch('loadGenres');
     },
     methods: {
       handleFileUpload: function() {
@@ -115,7 +139,10 @@
           title: this.title,
           cover: this.addedUrl,
           description: this.description,
-          id: this.book.id
+          idGenre: this.selectedGenre === ' '? undefined : this.selectedGenre,
+          idSubGenre: this.selectedSubGenre === ' ' ? undefined : this.selectedSubGenre,
+          id: this.book.id,
+          active: this.active ? 1 : 0
         };
 
         const vm = this;
@@ -142,6 +169,29 @@
     computed: {
       book() {
         return this.$store.state.currentBook;
+      },
+      genres() {
+        const values = this.$store.state.genres
+                .filter(item => item.idParent === undefined || item.idParent === null)
+                .map(function(item) {
+                  return {text: item.name, value: item.id}
+                });
+        values.push({text: ' ', value: undefined});
+        return values;
+      },
+      genreSubGenres() {
+        console.log(this.selectedGenre);
+        if (this.selectedGenre === undefined)
+          return [];
+        const vm = this;
+
+        const values = this.$store.state.genres
+                .filter(item => parseInt(item.idParent) === parseInt(vm.selectedGenre))
+                .map(function(item) {
+                  return {text: item.name, value: item.id}
+                });
+        values.push({text: ' ', value: undefined});
+        return values;
       }
     }
   }
