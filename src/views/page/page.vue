@@ -12,7 +12,7 @@
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn @click="addParagraph()">
-            Add
+            Save
           </v-btn>
           <v-btn @click="addingParagraph = false">
             Cancel
@@ -42,7 +42,7 @@
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn @click="addImage()">
-            Add
+            Save
           </v-btn>
           <v-btn @click="addingImage = false">Cancel</v-btn>
         </v-card-actions>
@@ -78,7 +78,7 @@
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn @click="addChoice()">
-            Add
+            Save
           </v-btn>
           <v-btn @click="addingChoice=false">Cancel</v-btn>
         </v-card-actions>
@@ -95,19 +95,13 @@
                   <v-text-field label="Title" v-model="title"></v-text-field>
                 </v-col>
               </v-row>
-              <v-row>
-                <v-col>
-                  <v-select :items="pageTypes" label="Page Type" v-model="selectedPageType">
-                  </v-select>
-                </v-col>
-              </v-row>
             </v-col>
           </v-row>
         </v-container>
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn @click="updatePageTitleAndType()">
-            Guardar
+            Save
           </v-btn>
           <v-btn @click="addingMetadata=false">Cancel</v-btn>
         </v-card-actions>
@@ -123,7 +117,7 @@
                   dark
                   @click="showAddMetadata()"
           >
-            Edit Title and Type
+            Edit Title
             <v-icon>mdi-pencil</v-icon>
           </v-btn>
         </v-col>
@@ -134,10 +128,6 @@
           </p>
           <p>
             El lector no va a ver el titulo de la pagina.
-          </p>
-          <p>
-            Ademas, marcala segun es un posible inicio, una pagina de trama, o un final.
-            Cuando el lector empiece, iniciara en alguna de las paginas marcadas como "iniciales".
           </p>
         </v-col>
       </v-row>
@@ -228,8 +218,7 @@
                 </v-img>
               </div>
               <div v-if="item.type===1">
-                <p>
-                  {{item.value}}
+                <p v-html="textToHtml(item.value)">
                 </p>
               </div>
           </v-col>
@@ -325,22 +314,7 @@
       rules: [
         //value => !value || value.size < 2000000 || 'Avatar size should be less than 2 MB!',
       ],
-      added_url: '',
-      pageTypes: [
-        {
-          text: 'Inicio',
-          value: 0
-        },
-        {
-          text: 'Trama',
-          value: 1
-        },
-        {
-          text: 'Fin',
-          value: 2
-        }
-      ],
-      selectedPageType: 0
+      added_url: ''
     }),
     created() {
       this.loadThisPage();
@@ -351,6 +325,9 @@
       this.loadThisPage();
     },
     methods: {
+      textToHtml(text) {
+        return text.replaceAll('\n', '<br>');
+      },
       gotoBack() {
         this.$router.go(-1);
       },
@@ -362,7 +339,6 @@
         };
         this.$store.dispatch('loadPage', data).then(function(data) {
           vm.title = data.title;
-          vm.selectedPageType = vm.pageTypes.find(item => item.value === data.page_type).value;
         });
         this.$store.dispatch('loadBookPages', this.$route.params.bookId)
       },
@@ -437,8 +413,7 @@
           bookId: this.$route.params.bookId,
           pageId: this.$route.params.pageId,
           page_id: this.$route.params.pageId,
-          title: this.title,
-          page_type: this.selectedPageType
+          title: this.title
         };
 
         this.$store.dispatch('updatePageTitleAndType', data).then(function(newData) {
