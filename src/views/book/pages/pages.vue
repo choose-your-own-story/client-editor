@@ -6,24 +6,24 @@
           Agreagar Pagina
         </v-btn>
 
-        <v-list>
-          <v-list-item v-for="item in pages" :key="item.id">
-            <v-list-item-action>
+        <v-container>
+          <v-row v-for="item in pages" :key="item.id">
+            <v-col cols="6">
               {{item.title}}
-            </v-list-item-action>
+            </v-col>
 
-            <v-list-item-action>
-              <v-btn :to="buildEditLink(item.id)">
+            <v-col cols="3">
+              <v-btn :to="buildEditLink(item.id)" color="primary" outlined>
                 Editar
               </v-btn>
-            </v-list-item-action>
-            <v-list-item-action>
-              <v-btn @click="deletePage(item.id)">
+            </v-col>
+            <v-col cols="3">
+              <v-btn @click="deletePage(item.id)" color="red" outlined>
                 Eliminar
               </v-btn>
-            </v-list-item-action>
-          </v-list-item>
-        </v-list>
+            </v-col>
+          </v-row>
+        </v-container>
       </v-col>
     </v-row>
 
@@ -101,7 +101,10 @@
     </div>
 
     <v-row>
-
+      <v-col></v-col>
+    </v-row>
+    <v-row>
+      <v-col></v-col>
     </v-row>
 
     <div v-if="currentNodeId !== undefined">
@@ -114,12 +117,12 @@
       </v-row>
       <v-row>
         <v-col>
-          <v-btn :to="buildEditLink(currentNodeId)">
+          <v-btn :to="buildEditLink(currentNodeId)" color="primary" outlined>
             Editar
           </v-btn>
         </v-col>
         <v-col>
-          <v-btn @click="deletePage(currentNodeId)">
+          <v-btn @click="deletePage(currentNodeId)" color="red" outlined>
             Eliminar
           </v-btn>
         </v-col>
