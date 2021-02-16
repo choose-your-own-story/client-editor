@@ -84,7 +84,7 @@
     </v-row>
 
 
-    <div>
+    <div style="width: 80%; background-color: lightyellow">
       <cytoscape
               ref="cyRef"
               :config="config"
@@ -125,6 +125,18 @@
         </v-col>
       </v-row>
     </div>
+
+    <v-row>
+      <v-col>
+
+      </v-col>
+    </v-row>
+
+    <v-row>
+      <v-col>
+
+      </v-col>
+    </v-row>
 
     <v-row>
       <v-col>
