@@ -314,7 +314,7 @@
                 id: counter,
                 source: parseInt(choice.idPage),
                 target: parseInt(choice.idTargetPage),
-                label: choice.text.substring(0, 20),
+                label: choice.text, //.substring(0, 20),
                 classes: 'autorotate'
               },
               group: 'edges'

@@ -15,7 +15,9 @@ const config = {
         "line-color": "#ccc",
         "target-arrow-color": "#ccc",
         "target-arrow-shape": "triangle",
-        "classes": "data(classes)"
+        "text-rotation": "autorotate",
+        "text-wrap": "ellipsis",
+        "text-max-width": 150
       }
     }
   ]
