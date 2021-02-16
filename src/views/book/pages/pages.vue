@@ -9,7 +9,19 @@
         <v-container>
           <v-row v-for="item in pages" :key="item.id">
             <v-col cols="6">
-              {{item.title}}
+              <strong>
+                <p>
+                  {{item.title}}
+                </p>
+              </strong>
+
+              <p>
+                Items: {{item.items_count}}
+              </p>
+              <p>
+                Choices: {{item.choices.length}}
+              </p>
+
             </v-col>
 
             <v-col cols="3">
@@ -23,6 +35,7 @@
               </v-btn>
             </v-col>
           </v-row>
+
         </v-container>
       </v-col>
     </v-row>
@@ -253,10 +266,8 @@
           animationEasing: undefined, // easing of animation if enabled,
           animateFilter: function ( node, i ){ return true; }, // a function that determines whether the node should be animated.  All nodes animated by default on animate enabled.  Non-animated nodes are positioned immediately when the layout starts
           ready: function() {
-            console.log('layout ready!!!!')
           }, // callback on layoutready
           stop: function() {
-            console.log('layout stoppppppppp =(')
           }, // callback on layoutstop
           transform: function (node, position ){ return position; } // transform a given node position. Useful for changing flow direction in discrete layouts
         };
