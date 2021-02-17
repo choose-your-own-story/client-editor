@@ -457,7 +457,7 @@
         let targetPage = 0;
         // existing page
         if (this.targetPageGroup === 0) {
-          targetPage = this.selectedTargetPage.value;
+          targetPage = this.selectedTargetPage;
         }
 
         // new page
