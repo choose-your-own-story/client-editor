@@ -2,41 +2,31 @@
   <v-container>
     <v-row>
       <v-col>
-        <v-btn color="primary" @click="addPage()">
-          Agreagar Pagina
-        </v-btn>
-
-        <v-container>
-          <v-row v-for="item in pages" :key="item.id">
-            <v-col cols="6">
-              <strong>
-                <p>
-                  {{item.title}}
-                </p>
-              </strong>
-
-              <p>
-                Items: {{item.items_count}}
-              </p>
-              <p>
-                Choices: {{item.choices.length}}
-              </p>
-
-            </v-col>
-
-            <v-col cols="3">
-              <v-btn :to="buildEditLink(item.id)" color="primary" outlined>
-                Editar
+        <v-data-table
+                :headers="pageHeaders"
+                :items="pages"
+                :items-per-page="5"
+        >
+          <template v-slot:top>
+            <v-toolbar flat>
+              <v-toolbar-title>Paginas</v-toolbar-title>
+              <v-divider
+                      class="mx-4"
+                      inset
+                      vertical
+              ></v-divider>
+              <v-spacer></v-spacer>
+              <v-btn color="primary" @click="addPage()">
+                Agreagar Pagina
               </v-btn>
-            </v-col>
-            <v-col cols="3">
-              <v-btn @click="deletePage(item.id)" color="red" outlined>
-                Eliminar
-              </v-btn>
-            </v-col>
-          </v-row>
+            </v-toolbar>
+          </template>
 
-        </v-container>
+          <template v-slot:item.actions="{ item }">
+            <v-icon class="mr-2" @click="buildEditLink(item.id)" color="orange">mdi-pencil</v-icon>
+            <v-icon class="mr-2" @click="deletePage(item.id)" color="red">mdi-delete</v-icon>
+          </template>
+        </v-data-table>
       </v-col>
     </v-row>
 
@@ -176,7 +166,28 @@
       config,
       currentNodeId: undefined,
       currentNodeTitle: undefined,
-      drawed: false
+      drawed: false,
+      pageHeaders: [
+        {
+          text: 'Title',
+          align: 'start',
+          sortable: true,
+          value: 'title',
+        },
+        {
+          text: 'Items',
+          align: 'start',
+          sortable: true,
+          value: 'items_count',
+        },
+        {
+          text: 'Choices',
+          align: 'start',
+          sortable: true,
+          value: 'choices.length',
+        },
+        { text: 'Actions', value: 'actions', sortable: false }
+      ]
     }),
     created() {
       this.$store.commit('emptyCurrentBookPages');
