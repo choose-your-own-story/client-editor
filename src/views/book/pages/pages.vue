@@ -244,7 +244,7 @@
         this.$store.dispatch('deletePage', data);
       },
       buildEditLink(pageId) {
-        return `/book/${this.book.id}/page/${pageId}`;
+        this.$router.push(`/book/${this.book.id}/page/${pageId}`);
       },
 
       deleteNode(id) {
