@@ -126,20 +126,23 @@ export default new Vuex.Store({
   },
   actions: {
     loadBookPages(state, bookId) {
-      // Send a POST request
-      const headers = {
-        'Authorization': `Bearer ${state.state.token}`,
-        'Access-Control-Allow-Origin': '*'
-      };
+      return new Promise(function(resolve, reject) {
+        // Send a POST request
+        const headers = {
+          'Authorization': `Bearer ${state.state.token}`,
+          'Access-Control-Allow-Origin': '*'
+        };
 
-      axios({
-        method: 'get',
-        url: `${process.env.VUE_APP_API_HOST}/api/book/${bookId}/page`,
-        headers: headers
-      }).then(function(response) {
-        state.commit('updateCurrentBookPages', response.data)
-      }).catch(function(err) {
-        console.log(err);
+        axios({
+          method: 'get',
+          url: `${process.env.VUE_APP_API_HOST}/api/book/${bookId}/page`,
+          headers: headers
+        }).then(function(response) {
+          state.commit('updateCurrentBookPages', response.data)
+          resolve()
+        }).catch(function(err) {
+          console.log(err);
+        });
       });
     },
     loadGenres(state) {
