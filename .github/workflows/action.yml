@@ -22,14 +22,27 @@ jobs:
           password: ${{ secrets.VAC_DOCKER_PASSWORD }}
           repository: jotaram/sm-editor
           tag_with_ref: true
-      - name: deploy prod
-        if: contains(github.ref, 'master')
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.DIGITAL_OCEAN_HOST }}
-          username: root
-          key: ${{ secrets.SSH_KEY }}
-          port: 22
-          script: |
-            docker pull jotaram/sm-editor:master
-            docker service update --image jotaram/sm-editor:latest story-maker-editor_sm-editor
+      - name: Configure SSH
+        run: |
+          mkdir -p ~/.ssh/
+          echo "$SSH_KEY" > ~/.ssh/staging.key
+          chmod 600 ~/.ssh/staging.key
+          cat >>~/.ssh/config <<END
+          Host staging
+            HostName $SSH_HOST
+            User $SSH_USER
+            IdentityFile ~/.ssh/staging.key
+            StrictHostKeyChecking no
+          END
+        env:
+          SSH_USER: root
+          SSH_KEY: ${{ secrets.SSH_KEY }}
+          SSH_HOST: ${{ secrets.DIGITAL_OCEAN_HOST }}
+      - name: copy configuration
+        run: scp docker-compose-traefik.yml staging:/tmp/docker-compose-traefik-historymaker-editor.yml
+      - name: update image
+        run: ssh staging 'docker pull jotaram/sm-editor:latest'
+      - name: rm stack
+        run: ssh staging 'docker stack rm historymaker-editor'
+      - name: up stack
+        run: ssh staging 'docker stack deploy --with-registry-auth --compose-file /tmp/docker-compose-traefik-historymaker-editor.yml historymaker-editor'
