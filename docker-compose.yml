@@ -9,8 +9,9 @@ x-logging:
 
 services:
   api:
-    container_name: editor-history-maker
-    image: jotaram/sm-editor-dev
+    build:
+      context: .
+      dockerfile: DockerfileDev
     command: >
       sh -c "yarn serve"
     working_dir: /app

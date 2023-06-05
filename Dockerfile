@@ -3,6 +3,8 @@ WORKDIR /app
 COPY . .
 RUN yarn global add @vue/cli
 RUN yarn install
+RUN npx browserslist@latest --update-db
+RUN export NODE_OPTIONS=--openssl-legacy-provider
 RUN yarn build --mode production
 
 FROM nginx as production-stage

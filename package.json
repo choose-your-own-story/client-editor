@@ -9,12 +9,13 @@
   "dependencies": {
     "@auth0/auth0-spa-js": "^1.13.6",
     "@fortawesome/fontawesome-free": "^5.8.2",
-    "@vue/cli": "^4.5.11",
+    "@vue/cli": "^4.5.19",
     "axios": "^0.21.1",
     "core-js": "^3.6.5",
     "roboto-fontface": "*",
     "vue": "^2.6.11",
     "vue-cytoscape": "^1.0.8",
+    "vue-loader": "^17.2.2",
     "vue-router": "^3.2.0",
     "vuetify": "^2.2.11",
     "vuex": "^3.4.0"
@@ -23,11 +24,11 @@
     "@vue/cli-plugin-babel": "~4.5.0",
     "@vue/cli-plugin-router": "~4.5.0",
     "@vue/cli-plugin-vuex": "~4.5.0",
-    "@vue/cli-service": "~4.5.0",
+    "@vue/cli-service": "^5.0.8",
     "sass": "^1.19.0",
     "sass-loader": "^8.0.0",
     "vue-cli-plugin-vuetify": "~2.0.9",
     "vue-template-compiler": "^2.6.11",
-    "vuetify-loader": "^1.3.0"
+    "vuetify-loader": "^1.9.2"
   }
 }

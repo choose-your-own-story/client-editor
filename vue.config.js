@@ -3,7 +3,9 @@ module.exports = {
     "vuetify"
   ],
   devServer: {
-    disableHostCheck: true
+	  allowedHosts: [
+		'localhost'
+	  ]
   },
   publicPath: process.env.VUE_APP_PUBLIC_PATH
 }

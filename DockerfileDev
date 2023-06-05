@@ -1,4 +1,4 @@
-FROM node:alpine3.12 as build-stage
+FROM node:14-alpine3.12 as build-stage
 WORKDIR /app
 COPY ./public .
 COPY ./src .
@@ -6,7 +6,9 @@ COPY .env .
 COPY .env.production .
 COPY babel.config.js .
 COPY package.json .
+COPY yarn.lock .
 COPY vue.config.js .
+RUN apk update
+RUN apk add bash
 RUN yarn global add @vue/cli
 RUN yarn install
-
