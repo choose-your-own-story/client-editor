@@ -12,6 +12,7 @@
     "@vue/cli": "^4.5.19",
     "axios": "^0.21.1",
     "core-js": "^3.6.5",
+    "gojs": "^2.3.11",
     "roboto-fontface": "*",
     "vue": "^2.6.11",
     "vue-cytoscape": "^1.0.8",

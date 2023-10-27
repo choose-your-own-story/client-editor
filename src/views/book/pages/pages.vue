@@ -78,22 +78,27 @@
       </v-col>
     </v-row>
 
+    <v-row>
+      <div style="position: relative;"  >
+        <div id="myDiagramDiv" style="border: solid 1px black; width:400px; height:400px"></div>
 
-    <div style="width: 80%; background-color: lightyellow">
-      <cytoscape
-              ref="cyRef"
-              :config="config"
-              v-on:cxttapstart="updateNode"
-              :afterCreated="afterCreated"
-      >
-        <cy-element
-                v-for="def in elements"
-                :key="`${def.data.id}`"
-                :definition="def"
-                v-on:mousedown="deleteNode($event, def.data.id)"
-        />
-      </cytoscape>
-    </div>
+        <ul id="contextMenu" class="menu">
+          <li id="cut" class="menu-item" @click="pato1('a')">Cut</li>
+          <li id="copy" class="menu-item" @click="cxcommand(event)">Copy</li>
+          <li id="paste" class="menu-item" @click="cxcommand(event)">Paste</li>
+          <li id="delete" class="menu-item" @click="cxcommand(event)">Delete</li>
+          <li id="color" class="menu-item">Color
+            <ul class="menu">
+              <li class="menu-item" style="background-color: #f38181;" @click="cxcommand(event, 'color')">Red</li>
+              <li class="menu-item" style="background-color: #eaffd0;" @click="cxcommand(event, 'color')">Green</li>
+              <li class="menu-item" style="background-color: #95e1d3;" @click="cxcommand(event, 'color')">Blue</li>
+              <li class="menu-item" style="background-color: #fce38a;" @click="cxcommand(event, 'color')">Yellow</li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+
+    </v-row>
 
     <v-row>
       <v-col>
@@ -156,3 +161,55 @@
 </template>
 
 <script src="./pages.js"></script>
+<style>
+  /* CSS for the traditional context menu */
+  .menu {
+    display: none;
+    position: absolute;
+    opacity: 0;
+    margin: 0;
+    padding: 8px 0;
+    z-index: 999;
+    box-shadow: 0 5px 5px -3px rgba(0, 0, 0, .2), 0 8px 10px 1px rgba(0, 0, 0, .14), 0 3px 14px 2px rgba(0, 0, 0, .12);
+    list-style: none;
+    background-color: #ffffff;
+    border-radius: 4px;
+  }
+
+  .menu-item {
+    display: block;
+    position: relative;
+    min-width: 60px;
+    margin: 0;
+    padding: 6px 16px;
+    font: bold 12px sans-serif;
+    color: rgba(0, 0, 0, .87);
+    cursor: pointer;
+  }
+
+  .menu-item::before {
+    position: absolute;
+    top: 0;
+    left: 0;
+    opacity: 0;
+    pointer-events: none;
+    content: "";
+    width: 100%;
+    height: 100%;
+    background-color: #000000;
+  }
+
+  .menu-item:hover::before {
+    opacity: .04;
+  }
+
+  .menu .menu {
+    top: -8px;
+    left: 100%;
+  }
+
+  .show-menu, .menu-item:hover > .menu {
+    display: block;
+    opacity: 1;
+  }
+</style>

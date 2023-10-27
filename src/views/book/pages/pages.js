@@ -1,4 +1,4 @@
-import config from "./example-config";
+import go from "gojs"
 
 export default {
   name: 'NewBook',
@@ -6,7 +6,6 @@ export default {
   data: () => ({
     errorMessage: '',
     snackbar: false,
-    config,
     currentNodeId: undefined,
     currentNodeTitle: undefined,
     drawed: false,
@@ -30,7 +29,8 @@ export default {
         value: 'choices.length',
       },
       { text: 'Actions', value: 'actions', sortable: false }
-    ]
+    ],
+    myDiagram: null
   }),
   created() {
     this.$store.commit('emptyCurrentBookPages');
@@ -44,7 +44,7 @@ export default {
       vm.addedUrl = vm.cover;
     });
 
-    this.$store.dispatch('loadBookPages', bookId).then(data => this.$nextTick(() => this.arrange()));
+    this.$store.dispatch('loadBookPages', bookId).then(data => this.arrange());
   },
   watch: {
     elements: async function(val) {
@@ -58,6 +58,43 @@ export default {
     }
   },
   methods: {
+    pato1(eventData) {
+      console.log('pato1');
+      console.log(eventData)
+      this.hideCX();
+    },
+    // A custom command, for changing the color of the selected node(s).
+    changeColor(diagram, color) {
+    // Always make changes in a transaction, except when initializing the diagram.
+    diagram.startTransaction("change color");
+    diagram.selection.each(node => {
+      if (node instanceof go.Node) {  // ignore any selected Links and simple Parts
+        // Examine and modify the data, not the Node directly.
+        var data = node.data;
+        // Call setDataProperty to support undo/redo as well as
+        // automatically evaluating any relevant bindings.
+        diagram.model.setDataProperty(data, "color", color);
+      }
+    });
+    diagram.commitTransaction("change color");
+  },
+
+    cxcommand(event, val) {
+      console.log('aja!')
+      if (val === undefined) val = event.currentTarget.id;
+      var diagram = myDiagram;
+      switch (val) {
+        case "cut": diagram.commandHandler.cutSelection(); break;
+        case "copy": diagram.commandHandler.copySelection(); break;
+        case "paste": diagram.commandHandler.pasteSelection(diagram.toolManager.contextMenuTool.mouseDownPoint); break;
+        case "delete": diagram.commandHandler.deleteSelection(); break;
+        case "color": {
+          var color = window.getComputedStyle(event.target)['background-color'];
+          changeColor(diagram, color); break;
+        }
+      }
+      diagram.currentTool.stopTool();
+    },
     addPage() {
       const vm = this;
 
@@ -89,44 +126,114 @@ export default {
     gotoEditLink(pageId) {
       this.$router.push(`/book/${this.book.id}/page/${pageId}`);
     },
-
-    deleteNode(id) {
-      this.currentNodeId = id.target[0]._private.data.id;
-      this.currentNodeTitle = id.target[0]._private.data.title;
-    },
-    updateNode(event) {
-    },
     afterCreated(cy) {
       // cy: this is the cytoscape instance
       this.cy = cy;
     },
+
+    hideCX() {
+      if (this.myDiagram.currentTool instanceof go.ContextMenuTool) {
+        this.myDiagram.currentTool.doCancel();
+      }
+    },
     arrange() {
-      let options = {
-        name: 'breadthfirst',
 
-        fit: true, // whether to fit the viewport to the graph
-        directed: true, // whether the tree is directed downwards (or edges can point in any direction if false)
-        padding: 30, // padding on fit
-        circle: false, // put depths in concentric circles if true, put depths top down if false
-        grid: false, // whether to create an even grid into which the DAG is placed (circle:false only)
-        spacingFactor: 1, // positive spacing factor, larger => more space between nodes (N.B. n/a if causes overlap)
-        boundingBox: undefined, // constrain layout bounds; { x1, y1, x2, y2 } or { x1, y1, w, h }
-        avoidOverlap: true, // prevents node overlap, may overflow boundingBox if not enough space
-        nodeDimensionsIncludeLabels: true, // Excludes the label when calculating node bounding boxes for the layout algorithm
-        roots: undefined, // the roots of the trees
-        maximal: true, // whether to shift nodes down their natural BFS depths in order to avoid upwards edges (DAGS only)
-        animate: true, // whether to transition the node positions
-        animationDuration: 500, // duration of animation in ms if enabled
-        animationEasing: undefined, // easing of animation if enabled,
-        animateFilter: function ( node, i ){ return true; }, // a function that determines whether the node should be animated.  All nodes animated by default on animate enabled.  Non-animated nodes are positioned immediately when the layout starts
-        ready: function() {
-        }, // callback on layoutready
-        stop: function() {
-        }, // callback on layoutstop
-        transform: function (node, position ){ return position; } // transform a given node position. Useful for changing flow direction in discrete layouts
-      };
+      var vm = this;
 
-      this.cy.layout( options ).run();
+      console.log('drawing...')
+
+      if (this.myDiagram !== null)
+        return;
+
+        // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
+        // For details, see https://gojs.net/latest/intro/buildingObjects.html
+        const $ = go.GraphObject.make;  // for conciseness in defining templates
+
+        let myDiagram =
+            new go.Diagram("myDiagramDiv",  // create a Diagram for the DIV HTML element
+                {
+                  "undoManager.isEnabled": true
+                });
+
+      this.myDiagram = myDiagram;
+
+      // This is the actual HTML context menu:
+        var cxElement = document.getElementById("contextMenu");
+
+        // an HTMLInfo object is needed to invoke the code to set up the HTML cxElement
+        var myContextMenu = $(go.HTMLInfo, {
+          show: showContextMenu,
+          hide: hideContextMenu
+        });
+
+        // define a simple Node template (but use the default Link template)
+        myDiagram.nodeTemplate =
+            $(go.Node, "Auto",
+                { contextMenu: myContextMenu },
+                $(go.Shape, "RoundedRectangle",
+                    // Shape.fill is bound to Node.data.color
+                    new go.Binding("fill", "color")),
+                $(go.TextBlock,
+                    { font: "bold small-caps 11pt helvetica, bold arial, sans-serif", margin: 7, stroke: "rgba(0, 0, 0, .87)" },  // some room around the text
+                    // TextBlock.text is bound to Node.data.key
+                    new go.Binding("text", "title"))
+            );
+
+        // create the model data that will be represented by Nodes and Links
+      let booksData = this.elements;
+
+        myDiagram.model = new go.GraphLinksModel(
+            booksData.nodes, booksData.edges
+        );
+
+        myDiagram.contextMenu = myContextMenu;
+
+        // We don't want the div acting as a context menu to have a (browser) context menu!
+        cxElement.addEventListener("contextmenu", e => {
+          e.preventDefault();
+          return false;
+        }, false);
+
+
+        function showContextMenu(obj, diagram, tool) {
+          // Show only the relevant buttons given the current state.
+          var cmd = diagram.commandHandler;
+          var hasMenuItem = false;
+          function maybeShowItem(elt, pred) {
+            if (pred) {
+              elt.style.display = "block";
+              hasMenuItem = true;
+            } else {
+              elt.style.display = "none";
+            }
+          }
+          maybeShowItem(document.getElementById("cut"), true);
+          maybeShowItem(document.getElementById("copy"), true);
+          maybeShowItem(document.getElementById("paste"), true);
+          maybeShowItem(document.getElementById("delete"), true);
+          maybeShowItem(document.getElementById("color"), obj !== null);
+
+          // Now show the whole context menu element
+          if (hasMenuItem) {
+            cxElement.classList.add("show-menu");
+            // we don't bother overriding positionContextMenu, we just do it here:
+            var mousePt = diagram.lastInput.viewPoint;
+            cxElement.style.left = mousePt.x + 5 + "px";
+            cxElement.style.top = mousePt.y + "px";
+          }
+
+          // Optional: Use a `window` pointerdown listener with event capture to
+          //           remove the context menu if the user clicks elsewhere on the page
+          //window.addEventListener("pointerdown", hideCX, true);
+        }
+
+        function hideContextMenu() {
+          cxElement.classList.remove("show-menu");
+          // Optional: Use a `window` pointerdown listener with event capture to
+          //           remove the context menu if the user clicks elsewhere on the page
+          // window.removeEventListener("pointerdown", vm.hideCX, true);
+        }
+
     }
   },
   computed: {
@@ -157,16 +264,15 @@ export default {
 
 
         nodes.push({
-          data: {
-            id: parseInt(item.id),
-            label: `${item.title}`,
-            title: item.title,
-            classes: 'multiline-manual',
-            color: color
-          },
-          group: 'nodes'
+          key: parseInt(item.id),
+          label: `${item.title}`,
+          title: item.title,
+          classes: 'multiline-manual',
+          color: color
         });
       });
+
+      let edges = [];
 
       let counter = 0;
       this.pages.forEach(function(item) {
@@ -174,22 +280,22 @@ export default {
           return;
 
         item.choices.forEach(function(choice) {
-          nodes.push({
-            data: {
-              id: counter,
-              source: parseInt(choice.idPage),
-              target: parseInt(choice.idTargetPage),
-              label: choice.text, //.substring(0, 20),
-              classes: 'autorotate'
-            },
-            group: 'edges'
+          if (item.id === choice.id)
+            return;
+
+          edges.push({
+            from: item.id,
+            to: choice.id
           });
 
           counter -= 1;
         })
       });
 
-      return nodes;
+      return {
+        nodes: nodes,
+        edges: edges
+      };
     }
   }
 }

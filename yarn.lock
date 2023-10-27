@@ -6607,6 +6607,11 @@ globby@^9.2.0:
     pify "^4.0.1"
     slash "^2.0.0"
 
+gojs@^2.3.11:
+  version "2.3.11"
+  resolved "https://registry.yarnpkg.com/gojs/-/gojs-2.3.11.tgz#835c3b73b8fff19c406248422afdf1d2582a74eb"
+  integrity sha512-Sdl61fI50m8pnTz0BCv7Yp1qMJ0pvCus84I0ELL+qOD+HS/V7/CrTmxNW0bLAA/yXvgbuB1wVWOcXphtcXURUA==
+
 gopd@^1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/gopd/-/gopd-1.0.1.tgz#29ff76de69dac7489b7c0918a5788e56477c332c"
