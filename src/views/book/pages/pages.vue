@@ -67,87 +67,19 @@
     </v-row>
 
     <v-row>
-      <v-col>
-
-      </v-col>
-    </v-row>
-
-    <v-row>
-      <v-col>
-
-      </v-col>
-    </v-row>
-
-    <v-row>
       <div style="position: relative;"  >
         <div id="myDiagramDiv" style="border: solid 1px black; width:400px; height:400px"></div>
 
         <ul id="contextMenu" class="menu">
-          <li id="cut" class="menu-item" @click="pato1('a')">Cut</li>
-          <li id="copy" class="menu-item" @click="cxcommand(event)">Copy</li>
-          <li id="paste" class="menu-item" @click="cxcommand(event)">Paste</li>
-          <li id="delete" class="menu-item" @click="cxcommand(event)">Delete</li>
-          <li id="color" class="menu-item">Color
-            <ul class="menu">
-              <li class="menu-item" style="background-color: #f38181;" @click="cxcommand(event, 'color')">Red</li>
-              <li class="menu-item" style="background-color: #eaffd0;" @click="cxcommand(event, 'color')">Green</li>
-              <li class="menu-item" style="background-color: #95e1d3;" @click="cxcommand(event, 'color')">Blue</li>
-              <li class="menu-item" style="background-color: #fce38a;" @click="cxcommand(event, 'color')">Yellow</li>
-            </ul>
-          </li>
+          <li id="edit" class="menu-item" @click="editBookPage()">Edit</li>
+          <li id="delete" class="menu-item" @click="deleteBookPage()">Delete</li>
         </ul>
       </div>
 
     </v-row>
 
     <v-row>
-      <v-col>
-        <v-btn @click="arrange()">
-          Redraw conceptual map
-        </v-btn>
-      </v-col>
-    </v-row>
-
-
-    <v-row>
       <v-col></v-col>
-    </v-row>
-    <v-row>
-      <v-col></v-col>
-    </v-row>
-
-    <div v-if="currentNodeId !== undefined">
-      <v-row>
-        <v-col>
-          <label>
-            Pagina Seleccionada: {{currentNodeTitle}}
-          </label>
-        </v-col>
-      </v-row>
-      <v-row>
-        <v-col>
-          <v-btn @click="gotoEditLink(currentNodeId)" color="primary" outlined>
-            Editar
-          </v-btn>
-        </v-col>
-        <v-col>
-          <v-btn @click="deletePage(currentNodeId)" color="red" outlined>
-            Eliminar
-          </v-btn>
-        </v-col>
-      </v-row>
-    </div>
-
-    <v-row>
-      <v-col>
-
-      </v-col>
-    </v-row>
-
-    <v-row>
-      <v-col>
-
-      </v-col>
     </v-row>
 
     <v-row>
