@@ -1,5 +1,19 @@
 import go from "gojs"
 
+class DemoForceDirectedLayout extends go.ForceDirectedLayout {
+  // Override the makeNetwork method to also initialize
+  // ForceDirectedVertex.isFixed from the corresponding Node.isSelected.
+  makeNetwork(coll) {
+    // call base method for standard behavior
+    const net = super.makeNetwork(coll);
+    net.vertexes.each(vertex => {
+      const node = vertex.node;
+      if (node !== null) vertex.isFixed = node.isSelected;
+    });
+    return net;
+  }
+}
+
 export default {
   name: 'NewBook',
 
@@ -123,7 +137,12 @@ export default {
       let myDiagram =
           new go.Diagram("myDiagramDiv",  // create a Diagram for the DIV HTML element
               {
-                "undoManager.isEnabled": true
+                "undoManager.isEnabled": true,
+                // layout: $(go.TreeLayout, { angle: 90, nodeSpacing: 10, layerSpacing: 30 })
+                // layout: new DemoForceDirectedLayout()
+                layout: $(go.LayeredDigraphLayout, { alignOption: go.LayeredDigraphLayout.AlignAll })
+                // layout: $(go.CircularLayout)
+
               });
 
       this.myDiagram = myDiagram;
@@ -141,6 +160,7 @@ export default {
       myDiagram.nodeTemplate =
           $(go.Node, "Auto",
               { contextMenu: myContextMenu },
+
               $(go.Shape, "RoundedRectangle",
                   // Shape.fill is bound to Node.data.color
                   new go.Binding("fill", "color")),

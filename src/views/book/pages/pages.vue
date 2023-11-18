@@ -67,8 +67,8 @@
     </v-row>
 
     <v-row>
-      <div style="position: relative;"  >
-        <div id="myDiagramDiv" style="border: solid 1px black; width:400px; height:400px"></div>
+      <div style="position: relative; width: 100%"  >
+        <div id="myDiagramDiv" style="border: solid 1px black; width:100%; height:800px"></div>
 
         <ul id="contextMenu" class="menu">
           <li id="edit" class="menu-item" @click="editBookPage()">Edit</li>
